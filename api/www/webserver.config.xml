@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebServer>
+    <servers>
+        <server host="*" port="8099" host_state_name="">
+            <defaultHost rules_id="api_rules"></defaultHost>
+        </server>
+    </servers>
+    <rules id="api_rules">
+        <rule match="^.*$" with="WebServer.redirecthandler" params='{"/index.page"}'></rule>
+    </rules>
+</WebServer>
