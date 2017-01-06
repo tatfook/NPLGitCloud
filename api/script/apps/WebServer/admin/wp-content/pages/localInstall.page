@@ -1,0 +1,518 @@
+﻿<?npl
+--[[
+Title: download the zip from github
+Author: big
+Date: 2016/11/10
+Desc: /ajax/localInstall?action=downloadQueue&url=&packagesId=%projectName=&version=&author=&homepage=
+]]
+
+NPL.load("(gl)script/ide/System/Plugins/PluginManager.lua");
+
+addheader('Access-Control-Allow-Origin', '*'); 
+
+local projectType = request:get('projectType');
+
+local PluginManager = commonlib.gettable("System.Plugins.PluginManager");
+local manager = PluginManager.CreateGetInstance(projectType == "npl" and "npl" or "Paracraft");
+
+--echo(manager:GetLoader():RebuildModuleList())  --> list of installed plugins
+--manager:GetLoader():LoadAllPlugins() --> load plugins, see PluginLoader for details
+
+
+if(is_ajax()) then
+	add_action(
+		'wp_ajax_downloadQueue',
+		function()
+			local url		  = request:get('url');
+			local homepage	  = request:get('homepage');
+			local projectName = request:get('projectName');
+			local projectType = request:get('projectType');
+			local version = request:get('version');
+			local author = request:get('author');
+			local packageId  = tonumber(request:get('packagesId'));
+
+			local downloadQueue = manager:GetLoader():GetDownloadQueue();
+
+			local bAdded = manager:GetLoader():InstallFromUrl({
+				url = url,
+				projectName = projectName,
+				version = version,
+				author = author,
+				packageId = packageId, 
+                projectType = projectType,
+			}, 
+			function(bSucceed, msg, package)
+				if(bSucceed and package) then
+                    manager:GetLoader():RebuildModuleList();
+					manager:GetLoader():SetPluginInfo(package.name, {
+						url = url, 
+						displayName = projectName, 
+						version = version,
+						author = author,
+						homepage = homepage,
+						packageId = packageId,
+                        projectType = projectType,
+					})
+                    manager:GetLoader():EnablePlugin(package.name, true, true);
+                    manager:GetLoader():SaveModTableToFile();
+				end
+			end)
+			response:send({packages = manager:GetLoader():GetDownloadQueue().packages, progress=manager:GetLoader():GetDownloadInfo()});
+		end
+	)
+	add_action(
+		'wp_ajax_GetCurrentDownload',
+		function()
+            response:send({packages = manager:GetLoader():GetDownloadQueue().packages, progress=manager:GetLoader():GetDownloadInfo()});
+		end
+	);
+	return;
+end
+
+
+wp_enqueue_script("jqueryui", "/wp-includes/js/jquery/jquery-ui.min.js"); 
+wp_enqueue_script("bootstrap", "/wp-includes/js/bootstrap/js/bootstrap.min.js");
+wp_enqueue_script("angular", "/wp-includes/js/angular/angular.min.js");
+wp_enqueue_script("angular-ui", "/wp-includes/js/angular/ui-bootstrap-tpls-1.3.3.min.js");
+
+PAGE_NO_SIDE_BAR = true;
+?>
+<div class="main" ng-app="plugin" ng-controller="localInstallController">
+    <img class="icon" ng-src="{{gitIcon}}">
+	<div class="plugin hidden-xs hidden-sm">
+        <div class="infor-details">
+            <div class="item">
+                <label>{{language.packageNameDesc}}</label>
+                <div>{{projectName}}</div>
+            </div>
+            <div class="item">
+                <label>{{language.authorDesc}}</label>
+                <div>{{author}}</div>
+            </div>
+            <div class="item">
+                <label>{{language.versionDesc}}</label>
+                <div>{{version}}</div>
+            </div>
+        </div>
+        <div class="quene">
+            <h4>{{language.thanks}}</h4>
+		    <br>
+		    <h4 style="margin-top: -8px;">[{{language.current}}]</h4>
+		    <div>
+			     <b>{{currentProjectName}}</b>
+		    </div>
+		    <br>
+		    <h4>[{{language.waiting}}]</h4>
+		    <div ng-repeat="package in waitPackages track by $index">
+			    <b>
+			       #{{$index+1}} &nbsp;&nbsp;&nbsp;
+			       {{language.projectNameDesc}}:{{package.projectName}} &nbsp;&nbsp;&nbsp;
+			       {{language.packageId}}:{{package.packageId}}
+			    </b>
+		    </div>
+		    <b ng-if="waitPackagesIsEmpty">
+			    {{language.notYet}}
+		    </b>
+        </div>
+        <div class="button">
+            <button class="start" ng-click="install()" disabled="disable">{{language.countDownA+seconds+language.countDownB}}</button>
+            <button class="process" disabled="disabled"></button>
+            <span>{{language.tryAgain}}</span>
+            <!--<button ng-click="cancel()">Cancel</button>-->
+        </div>
+	</div>
+    <div class="plugin plugin-sm hidden-md hidden-lg">
+        <div class="infor-details">
+            <div class="item">
+                <label>{{language.packageNameDesc}}</label>
+                <div>{{projectName}}</div>
+            </div>
+            <div class="item">
+                <label>{{language.authorDesc}}</label>
+                <div>{{author}}</div>
+            </div>
+            <div class="item">
+                <label>{{language.versionDesc}}</label>
+                <div>{{version}}</div>
+            </div>
+        </div>
+        <div class="quene">
+            <h4>{{language.thanks}}</h4>
+		    <br>
+		    <h4 style="margin-top: -8px;">[{{language.current}}]</h4>
+		    <div>
+			     <b>{{currentProjectName}}</b>
+		    </div>
+		    <br>
+		    <h4>[{{language.waiting}}]</h4>
+		    <div ng-repeat="package in waitPackages track by $index">
+			    <b>
+			       #{{$index+1}} &nbsp;&nbsp;&nbsp;
+			       {{language.projectNameDesc}}:{{package.projectName}} &nbsp;&nbsp;&nbsp;
+			       {{language.packageId}}:{{package.packageId}}
+			    </b>
+		    </div>
+		    <b ng-if="waitPackagesIsEmpty">
+			    {{language.notYet}}
+		    </b>
+        </div>
+        <div class="button">
+            <button class="start" ng-click="install()" disabled="disable">{{language.countDownA+seconds+language.countDownB}}</button>
+            <button class="process" disabled="disabled"></button>
+            <span>{{language.tryAgain}}</span>
+            <!--<button ng-click="cancel()">Cancel</button>-->
+        </div>
+	</div>
+</div>
+<style>
+	.main{
+		text-align: center;
+	}
+
+    .icon{
+		width: 70px;
+    }
+
+    .plugin {
+      width: 100%;
+      height: 545px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .plugin h1 {
+      font-size: 32px;
+      color: #CC3300;
+      text-align: center;
+      margin-top: 28px;
+    }
+    .plugin .infor-details {
+      width: 52.5%;
+      position: relative;
+      margin: 0 auto;
+      margin-top: 28px;
+      font-size: 20px;
+    }
+    .plugin-sm .infor-details {
+      width: 82.5%;
+      position: relative;
+      margin: 0 auto;
+      margin-top: 28px;
+      font-size: 20px;
+    }
+    .plugin .infor-details:after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+    .plugin .infor-details .item {
+      margin-bottom: 10px;
+    }
+    .plugin .infor-details .item:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+    .plugin .infor-details .item label {
+      float: left;
+      margin: 0px;
+      font-size: 18px;
+    }
+    .plugin .infor-details .item > div {
+      /*margin-left: 265px;*/
+      float: right;
+    }
+    .plugin .quene {
+      overflow-y: auto;
+      width: 52.5%;
+      border: solid 1px #000;
+      font-size: 13px;
+      margin: 0 auto;
+      padding: 5px;
+      height: 180px;
+      margin-top: 20px;
+      text-align: left;
+    }
+	.plugin-sm .quene {
+      width: 82.5%;
+    }
+    .plugin .button {
+      width: 385px;
+      margin: 0 auto;
+      display: block;
+    }
+	.plugin-sm .button{
+	  width: 82.5%;
+	}
+    .plugin .button button {
+      width: 100%;
+      height: 45px;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      color: #FFF;
+      outline: none;
+      border-radius: 5px;
+      display: block;
+    }
+    .plugin .button button.start {
+      background-color: #00FFFF;
+      margin-top: 50px;
+      font-weight: 600;
+      color: #000000;
+      transition: background-color 1s;
+    }
+    .plugin .button button.process {
+      background-color: #05bbbb;
+      margin-top: -45px;
+      /*position: relative;
+                    z-index: 1;*/
+      color: #025a48;
+      font-weight: 600;
+      display: none;
+      overflow: hidden;
+      transition: opacity 1s,width 1s;
+      /*@animate: animate 3s linear infinite;
+                    -webkit-animation: @animate;
+                    -moz-animation: @animate;
+                    -ms-animation: @animate;
+                    -o-animation: @animate;
+                    animation: @animate;*/
+    }
+    .plugin .button span {
+      text-align: center;
+      width: 100%;
+      display: none;
+      margin-top: 10px;
+      color: #007d5f;
+      position: relative;
+    }
+    @-webkit-keyframes animate {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: .3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @-moz-keyframes animate {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: .3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @-ms-keyframes animate {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: .3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @-o-keyframes animate {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: .3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @keyframes animate {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: .3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+</style>
+
+<script>
+angular.module('plugin', ['ui.bootstrap'])
+.controller('localInstallController', function ($scope, $http, $location, $interval,$timeout) {
+    var params = $location.search();
+
+    $scope.projectName = params.projectName;
+    $scope.version = params.version;
+    $scope.author = params.displayName;
+    $scope.projectReleases = params.projectReleases;
+    $scope.gitIcon = params.gitIcon;
+    $scope.packagesId = params.packagesId;
+    $scope.projectType = params.projectType;
+
+    var totalSeconds = 2;
+    $scope.seconds = totalSeconds;
+    $scope.waitPackagesIsEmpty = true;
+    $scope.waitPackages = [];
+
+    $scope.language = {};
+
+    var language_chinese = {
+        "starting":"开始中",
+        "notUpdate":"软件包未有更新",
+        "serviceNotAvailable":"网络似乎出现了一些问题，请稍后再试",
+        "complete":"完成！",
+        "packageNameDesc":"项目名称",
+        "authorDesc":"作者",
+        "versionDesc":"版本",
+        "thanks":"谢谢你的下载",
+        "current":"当前下载",
+        "waiting":"下载队列",
+        "projectNameDesc":"项目名称",
+        "packageId":"包ID",
+        "notYet":"空",
+        "countDownA":"",
+        "countDownB":"秒后开始",
+        "tryAgain":"请按右上角的按钮关闭对话框",
+        "retry": "下载异常(您也可以直接下载文件，并手工安装)，是否重新下载?"
+    };
+
+    var language_english = {
+        "starting":"Starting",
+        "notUpdate":"package is already up to date",
+        "serviceNotAvailable":"service is not available now, please try again later",
+        "complete":"Download complete!",
+        "packageNameDesc":"Package name",
+        "authorDesc":"Author",
+        "versionDesc":"version",
+        "thanks":"Thanks for downloading",
+        "current":"Current download",
+        "waiting":"Download queue",
+        "projectNameDesc":"Project name",
+        "packageId":"Package id",
+        "notYet":"Empty",
+        "countDownA":"Start in ",
+        "countDownB":" seconds",
+        "tryAgain":"Press close button at right top corner",
+        "retry":"Download failed (you can download file directly and manually install), do you want to retry downloading?"
+    };
+
+    if($scope.projectType == 'npl'){
+        $scope.language = language_english;
+    }else if($scope.projectType == 'paracraft'){
+        $scope.language = language_chinese;
+    }
+
+    $interval(function () {
+        $scope.seconds--;
+        if ($scope.seconds == 0) {
+            $(".start").text($scope.language.starting + "......");
+            $scope.install();
+        }
+    }, 1000, totalSeconds);
+
+	var updateUI = function(packages, progress)
+	{
+		var package = progress.package;
+		$scope.currentProjectName = package ? package.projectName : "";
+		$scope.waitPackagesIsEmpty = (packages.length == 0);
+        $scope.waitPackages = packages;
+
+		if(package && package.projectName == $scope.projectName)
+		{
+			// our turn now
+			if(package.bSucceed == true) 
+			{
+				if(package.bAlreadyUptodate)
+				{
+					$(".start").text($scope.language.notUpdate);
+					$(".button span").css("display", "block");
+				}
+				else
+				{
+					$(".start").text($scope.language.complete).css("background-color", "#00ffbd");
+					$(".process").css({ "opacity": "0", "width": "100%" });
+					$(".button span").css("display", "block");
+				}
+				return;
+			}
+			else if(package.bSucceed == false)
+			{
+				$(".start").text($scope.language.serviceNotAvailable);
+                $(".button span").css("display", "block");
+                    
+                if(confirm($scope.language.retry)){
+                    $scope.install()
+                }
+				return;
+			}
+		}
+		else
+		{
+			// not our turn yet
+		}
+        
+		// if there is still pending packages, we will continue fetch progress
+		if(packages.length > 0)
+		{
+			var currentFileSize = progress.currentFileSize;
+            var totalFileSize   = progress.totalFileSize;
+
+            var percent = (currentFileSize / totalFileSize) * 100;
+
+            if (isNaN(percent) || percent == Infinity) {
+                percent = 0;
+            } else {
+                percent = parseInt(percent);
+            }
+
+            $(".start").text(percent + "%      " + parseInt(currentFileSize / 1024) + "/" + parseInt(totalFileSize / 1024) + " KB");
+            $(".process").css({ "display": "block", "width": percent + "%" });
+
+			$timeout(function () {
+                $scope.getCurrentDownload();
+            }, 1000);
+		}
+	}
+
+    $scope.install = function () {
+        $http({
+            method: 'POST',
+            url: '/ajax/localInstall?action=downloadQueue',
+            data: {
+                url: $scope.projectReleases,
+                projectName: $scope.projectName,
+                packagesId: $scope.packagesId,
+                projectType: $scope.projectType,
+				author: $scope.author,
+				version: $scope.version,
+				homepage: params.homepage,
+            }
+        })
+        .then(function (response) {
+			updateUI(response.data.packages, response.data.progress);
+        }, function (response) { });
+    }
+
+    $scope.getCurrentDownload = function () {
+        $http({
+            method: "POST",
+            url: "/ajax/localInstall?action=GetCurrentDownload",
+            data: {
+                projectType: $scope.projectType,
+            }
+        })
+        .then(function (response) {
+			updateUI(response.data.packages, response.data.progress);
+        }, function (response) { });
+    }
+})
+</script>

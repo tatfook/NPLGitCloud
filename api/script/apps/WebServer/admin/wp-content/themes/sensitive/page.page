@@ -1,0 +1,25 @@
+<?npl
+if(not ABSPATH) then die() end
+
+get_header(); ?>
+<div class="container">
+  <div class="row">
+    <div id="content" class="col-md-8">
+      <?npl the_content(); ?>
+    </div>
+    <div id="sidebar" class="col-md-4">
+      <?if(not PAGE_NO_SIDE_BAR) then 
+			dynamic_sidebar('propertywindow.page'); 
+		else ?>
+			<script>
+				$(function() {
+				if(typeof Page != 'undefined')
+					Page.ShowSideBar(false);
+				});
+			</script>
+		<? end ?>
+    </div>
+  </div>
+</div>
+
+<?npl get_footer(); ?>
