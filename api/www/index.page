@@ -1,0 +1,6 @@
+<?npl
+WP_USE_MINI_LOADER = true;
+include_once("script/apps/WebServer/admin/wp-main.page");
+
+include_once("./routes.page");
+?>
