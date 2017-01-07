@@ -1,0 +1,7 @@
+<?npl
+include_once("root/routes.page");
+
+if (is_root_api()) then
+    go_root_api();
+end
+?>
