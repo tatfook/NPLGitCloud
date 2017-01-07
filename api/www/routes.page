@@ -1,7 +1,10 @@
 <?npl
 include_once("root/routes.page");
+include_once("users/routes.page");
 
 if (is_root_api()) then
     go_root_api();
+elseif (is_users_api()) then
+    go_users_api();
 end
 ?>

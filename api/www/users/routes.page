@@ -1,0 +1,26 @@
+<?npl
+local apis = {
+    {"^/user$", "GET", current_user_url},
+};
+
+function is_users_api()
+    local url = request:url():match("^[^%?]*");
+    local method = request:GetMethod();
+    for i = 1, 4 do
+        if (url == apis[i][1] and method == apis[i][2]) then
+            return true;
+        end
+    end
+    return false;
+end
+
+function go_users_api()
+    local url = request:url():match("^[^%?]*");
+    local method = request:GetMethod();
+    for i = 1, 4 do
+        if (url == apis[i][1] and method == apis[i][2]) then
+            apis[i][3]()
+        end
+    end
+end
+?>
