@@ -64,15 +64,23 @@ local function current_user_url()
     process_json_response(result);
 end
 
+local function user_url()
+    local username = request:url():match("^[^%?]*"):match("/users/(.+)");
+    local user_info = get_user_info_db(username);
+    local result = process_user_info(user_info, username);
+    process_json_response(result);
+end
+
 local apis = {
     {"^/user$", "GET", current_user_url},
+    {"^/users/.+", "GET", user_url}
 };
 
 function is_users_api()
     local url = request:url():match("^[^%?]*");
     local method = request:GetMethod();
     for i = 1, 4 do
-        if (url == apis[i][1] and method == apis[i][2]) then
+        if (url:match(apis[i][1]) == "" and method == apis[i][2]) then
             return true;
         end
     end
@@ -83,7 +91,7 @@ function go_users_api()
     local url = request:url():match("^[^%?]*");
     local method = request:GetMethod();
     for i = 1, 4 do
-        if (url == apis[i][1] and method == apis[i][2]) then
+        if (url:match(apis[i][1]) == "" and method == apis[i][2]) then
             apis[i][3]()
         end
     end
