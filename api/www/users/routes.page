@@ -72,10 +72,30 @@ local function user_url()
     process_json_response(result);
 end
 
+local process_update_body(body)
+    local result = {};
+    result["name"] = body["name"];
+    result["email"] = body["email"];
+    result["blog"] = body["blog"];
+    result["company"] = body["company"];
+    result["location"] = body["location"];
+    result["hireable"] = body["hireable"];
+    result["bio"] = body["bio"];
+    return result;
+end
+
 local function update_current_user()
+    if (request:IsJsonBody()) then
+        not_json_response();
+        return;
+    end
     local username = get_auth_user();
-    request:ParsePostData();
-    local body = request:GetBody();
+    local body = json_decode(request:GetBody());
+    if (not body) then
+        invalid_json_response();
+        return;
+    end
+    body = process_update_body(body);
     local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
     local db = TableDatabase:new():connect("api/db/", function() end);
     db.User:updateOne({username=username}, body, function(err, data) end);
