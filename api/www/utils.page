@@ -1,0 +1,5 @@
+<?npl
+function process_json_response(body)
+    response:send_json(body);
+end
+?>
