@@ -1,4 +1,69 @@
 <?npl
+include_once("../utils.page");
+include_once("../auth/routes.page");
+
+local function get_user_info_db(username)
+    NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+    local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+    local db = TableDatabase:new():connect("temp/mydatabase/", function() end);
+    local result = {};
+    db.Users:find({login=username}, function(err, user) result = user; end);
+    return result;
+end
+
+local function process_user_info(user_info, username)
+    local api_addr = os.getenv("DGIT_API_ADDR");
+    local web_addr = os.getenv("DGIT_WEB_ADDR");
+    local result = {};
+    result["login"] = username;
+    result["id"] = user_info["id"];
+    result["avatar_url"] = user_info["avatar_url"];
+    result["gravatar_id"] = user_info["gravatar_id"];
+    result["url"] = api_addr .. "/users/" .. username;
+    result["html_url"] = web_addr .. "/"  .. username;
+    result["followers_url"] = api_addr .. "/users/" .. username .. "/followers";
+    result["following_url"] = api_addr .. "/users/" .. username .. "/following{/other_user}";
+    result["gists_url"] = api_addr .. "/users/" .. username .. "/gists{/gist_id}";
+    result["starred_url"] = api_addr .. "/users/" .. username .. "/starred{/owner}{/repo}";
+    result["subscriptions_url"] = api_addr .. "/users/" .. username .. "/subscriptions";
+    result["organizations_url"] = api_addr .. "/users/" .. username .. "/orgs";
+    result["repos_url"] = api_addr .. "/users/" .. username .. "/repos";
+    result["events_url"] = api_addr .. "/users/" .. username .. "/events{/privacy}";
+    result["received_events_url"] = api_addr .. "/users/" .. username .. "/received_events";
+    result["type"] = user_info["type"];
+    result["site_admin"] = user_info["site_admin"];
+    result["name"] = user_info["name"];
+    result["company"] = user_info["company"];
+    result["blog"] = user_info["blog"];
+    result["location"] = user_info["location"];
+    result["email"] = user_info["email"];
+    result["hireable"] = user_info["hireable"];
+    result["bio"] = user_info["bio"];
+    result["public_repos"] = get_public_repos_db(username);
+    result["public_gists"] = get_public_gists_db(username);
+    result["followers"] = get_followers_db(username);
+    result["following"] = get_following_db(username);
+    result["created_at"] = user_info["created_at"];
+    result["updated_at"] = user_info["updated_at"];
+end
+
+local function process_auth_user_info(result, user_info, username)
+    result["total_private_repos"] = get_total_private_repos_db(username);
+    result["owned_private_repos"] = get_owned_private_repos_db(username);
+    result["private_gists"] = get_private_gists_db(username);
+    result["disk_usage"] = get_disk_usage_db(username);
+    result["collaborators"] = get_collaborators_db(username);
+    result["plan"] = get_user_plan_db(username);
+end
+
+local function current_user_url()
+    local username = get_auth_user();
+    local user_info = get_user_info_db(username);
+    local result = process_user_info(user_info, username);
+    process_auth_user_info(result, user_info, username);
+    process_json_response(result);
+end
+
 local apis = {
     {"^/user$", "GET", current_user_url},
 };

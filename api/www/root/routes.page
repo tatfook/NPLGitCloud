@@ -1,4 +1,6 @@
 <?npl
+include_once("../utils.page")
+
 function is_root_api()
     local url = request:url():match("^[^%?]*");
     local method = request:GetMethod();
@@ -41,7 +43,7 @@ local apis = {
 
 function go_root_api()
     if request:GetMethod() == "GET" then
-        response:send_json(apis);
+        process_json_response(apis);
     end
 end
 ?>
