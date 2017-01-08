@@ -12,12 +12,9 @@ local function get_user_info_db(username)
     return result;
 end
 
-local function process_user_info(user_info, username)
-    local api_addr = os.getenv("DGIT_API_ADDR");
-    local web_addr = os.getenv("DGIT_WEB_ADDR");
-    local result = {};
+local function process_user_info(result, user_info, username)
     result["login"] = username;
-    result["id"] = user_info["id"];
+    result["id"] = user_info["_id"];
     result["avatar_url"] = user_info["avatar_url"];
     result["gravatar_id"] = user_info["gravatar_id"];
     result["url"] = api_addr .. "/users/" .. username;
@@ -33,6 +30,9 @@ local function process_user_info(user_info, username)
     result["received_events_url"] = api_addr .. "/users/" .. username .. "/received_events";
     result["type"] = user_info["type"];
     result["site_admin"] = user_info["site_admin"];
+end
+
+local function process_public_user_info(result, user_info, username)
     result["name"] = user_info["name"];
     result["company"] = user_info["company"];
     result["blog"] = user_info["blog"];
@@ -57,18 +57,45 @@ local function process_auth_user_info(result, user_info, username)
     result["plan"] = get_user_plan_db(username);
 end
 
+local function get_basic_user_info(username, user_info)
+    if (user_info == nil) then
+        user_info = get_user_info_db(username);
+    end
+    local result = {};
+    process_user_info(result, user_info, username);
+    return result;
+end
+
+local function get_public_user_info(username, user_info)
+    if (user_info == nil) then
+        user_info = get_user_info_db(username);
+    end
+    local result = {};
+    process_user_info(result, user_info, username);
+    process_public_user_info(result, user_info, username);
+    return result;
+end
+
+local function get_private_user_info(username, user_info)
+    if (user_info == nil) then
+        user_info = get_user_info_db(username);
+    end
+    local result = {};
+    process_user_info(result, user_info, username);
+    process_public_user_info(result, user_info, username);
+    process_auth_user_info(result, user_info, username);
+    return result;
+end
+
 local function current_user_url()
     local username = get_auth_user();
-    local user_info = get_user_info_db(username);
-    local result = process_user_info(user_info, username);
-    process_auth_user_info(result, user_info, username);
+    local result = get_private_user_info(username);
     process_json_response(result);
 end
 
 local function user_url()
     local username = request:url():match("^[^%?]*"):match("/users/(.+)");
-    local user_info = get_user_info_db(username);
-    local result = process_user_info(user_info, username);
+    local result = get_public_user_info(username);
     process_json_response(result);
 end
 
@@ -99,12 +126,37 @@ local function update_current_user()
     local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
     local db = TableDatabase:new():connect("api/db/", function() end);
     db.User:updateOne({username=username}, body, function(err, data) end);
+    process_json_response(get_private_user_info(username));
+end
+
+local function all_users()
+    local since = request:get("since");
+    if (not since) then
+        since = 1;
+    else
+        since = tonumber(since);
+    end
+    local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+    local db = TableDatabase:new():connect("api/db/", function() end);
+    local db_result = {};
+    db.User:find({ _id = { gt = since - 1, limit = 30 } }, function(err, rows) db_result = rows; end);
+    local result = {};
+    for k, v in ipairs(db_result) do
+        table.insert(result, get_basic_user_info(v["username"], v));
+    end
+    local link = {};
+    db.Users:find({ _id = { gt = db_result[#db_result]["_id"], limit = 1 } }, function(err, users) link["next"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "next" }; end);
+    db.Users:find({ ["-_id"] = { limit = 1 } }, function(err, users) link=["last"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "last" }; end);
+    db.Users:find({ ["+_id"] = { limit = 1 } }, function(err, users) link=["first"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "first" }; end);
+    db.Users:find({ _id = { lt = db_result[1]["_id"], limit = 1 } }, function(err, users) link["previous"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "previous" }; end);
+    process_json_link_response(result, link);
 end
 
 local apis = {
     {"^/user$", "GET", current_user_url},
     {"^/users/.+", "GET", user_url},
-    {"^/user$", "PATCH", update_current_user}
+    {"^/user$", "PATCH", update_current_user},
+    {"^/users$", "GET", all_users}
 };
 
 function is_users_api()
