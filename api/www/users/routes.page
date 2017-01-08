@@ -2,12 +2,13 @@
 include_once("../utils.page");
 include_once("../auth/routes.page");
 
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+
 local function get_user_info_db(username)
-    NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
     local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
-    local db = TableDatabase:new():connect("temp/mydatabase/", function() end);
+    local db = TableDatabase:new():connect("api/db/", function() end);
     local result = {};
-    db.Users:find({login=username}, function(err, user) result = user; end);
+    db.Users:findOne({username=username}, function(err, user) result = user; end);
     return result;
 end
 
@@ -71,9 +72,19 @@ local function user_url()
     process_json_response(result);
 end
 
+local function update_current_user()
+    local username = get_auth_user();
+    request:ParsePostData();
+    local body = request:GetBody();
+    local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+    local db = TableDatabase:new():connect("api/db/", function() end);
+    db.User:updateOne({username=username}, body, function(err, data) end);
+end
+
 local apis = {
     {"^/user$", "GET", current_user_url},
-    {"^/users/.+", "GET", user_url}
+    {"^/users/.+", "GET", user_url},
+    {"^/user$", "PATCH", update_current_user}
 };
 
 function is_users_api()
