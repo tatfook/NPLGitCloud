@@ -2,6 +2,8 @@
 include_once("root/routes.page");
 include_once("users/routes.page");
 
+print(request:GetMethod() .. " " .. request:url());
+
 if (is_root_api()) then
     go_root_api();
 elseif (is_users_api()) then
