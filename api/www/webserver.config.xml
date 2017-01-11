@@ -3,6 +3,9 @@
     <servers>
         <server host="*" port="8181" host_state_name="">
             <defaultHost rules_id="api_rules"></defaultHost>
+            <virtualhosts>
+                <host name="www.sitename.com" rules_id="api_rules"></host>
+            </virtualhosts>
         </server>
     </servers>
     <rules id="api_rules">
