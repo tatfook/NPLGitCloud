@@ -99,7 +99,7 @@ local function user_url()
     process_json_response(result);
 end
 
-local process_update_body(body)
+local function process_update_body(body)
     local result = {};
     result["name"] = body["name"];
     result["email"] = body["email"];
