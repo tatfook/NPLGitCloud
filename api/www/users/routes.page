@@ -146,8 +146,8 @@ local function all_users()
     end
     local link = {};
     db.Users:find({ _id = { gt = db_result[#db_result]["_id"], limit = 1 } }, function(err, users) link["next"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "next" }; end);
-    db.Users:find({ ["-_id"] = { limit = 1 } }, function(err, users) link=["last"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "last" }; end);
-    db.Users:find({ ["+_id"] = { limit = 1 } }, function(err, users) link=["first"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "first" }; end);
+    db.Users:find({ ["-_id"] = { limit = 1 } }, function(err, users) link["last"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "last" }; end);
+    db.Users:find({ ["+_id"] = { limit = 1 } }, function(err, users) link["first"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "first" }; end);
     db.Users:find({ _id = { lt = db_result[1]["_id"], limit = 1 } }, function(err, users) link["previous"] = { api_addr .. "/users?since=" .. tostring(users[1]["_id"]), "previous" }; end);
     process_json_link_response(result, link);
 end
