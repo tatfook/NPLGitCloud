@@ -1,4 +1,6 @@
 <?npl
+API_ADDR = "https://api.dgit.com";
+
 function process_json_response(body)
     response:send_json(body);
 end
