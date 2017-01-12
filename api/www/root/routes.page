@@ -9,7 +9,7 @@ end
 
 local apis = {
     current_user_url = API_ADDR .. "/user",
-    current_user_authorizations_html_url = "https://github.com/settings/connections/applications{/client_id}",
+    current_user_authorizations_html_url = WEB_ADDR .. "/settings/connections/applications{/client_id}",
     authorizations_url = API_ADDR .. "/authorizations",
     code_search_url = API_ADDR .. "/search/code?q={query}{&page,per_page,sort,order}",
     commit_search_url = API_ADDR .. "/search/commits?q={query}{&page,per_page,sort,order}",

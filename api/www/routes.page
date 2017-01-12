@@ -1,10 +1,13 @@
 <?npl
 include_once("./root/routes.page");
 include_once("./emojis/routes.page");
+include_once("./gists/routes.page");
 
 if (is_root_api()) then
     go_root_api();
 elseif (is_emojis_api()) then
     go_emojis_api();
+elseif (is_gists_api()) then
+    go_gists_api();
 end
 ?>
