@@ -20,3 +20,4 @@ local emojis = {
 function go_emojis_api()
     process_json_response(emojis);
 end
+?>
