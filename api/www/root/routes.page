@@ -42,8 +42,6 @@ local apis = {
 };
 
 function go_root_api()
-    if request:GetMethod() == "GET" then
-        process_json_response(apis);
-    end
+    process_json_response(apis);
 end
 ?>
