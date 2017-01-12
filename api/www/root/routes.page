@@ -1,5 +1,5 @@
 <?npl
-include_once("../utils.page")
+include_once("../utils.page");
 
 function is_root_api()
     local url = request:url():match("^[^%?]*");
