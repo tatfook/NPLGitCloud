@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WebServer>
     <servers>
-        <server host="*" port="8181" host_state_name="">
+        <server host="*" port="8080" host_state_name="">
             <defaultHost rules_id="api_rules"></defaultHost>
             <virtualhosts>
                 <host name="www.sitename.com" rules_id="api_rules"></host>
