@@ -1,4 +1,8 @@
 <?npl
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
 function get_user_db(user)
     return {
         login = user["login"],
@@ -20,3 +24,10 @@ function get_user_db(user)
         site_admin = user["site_admin"]
     };
 end
+
+function get_user_by_username(username)
+    local record;
+    db.Users:findOne({ login = username }, function(err, user) record = user; end);
+    return get_user_db(record);
+end
+?>

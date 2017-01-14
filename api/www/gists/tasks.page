@@ -9,7 +9,7 @@ function get_gist_db(gist)
         id = gist["id"],
         description = gist["description"],
         public = gist["public"],
-        owner = get_user_db(gist["id"]),
+        owner = get_user_by_username(gist["id"]),
         user = gist["user"],
         files = gist["files"],
         truncated = gist["truncated"],
