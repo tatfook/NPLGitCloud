@@ -1,0 +1,22 @@
+<?npl
+function get_user_db(user)
+    return {
+        login = user["login"],
+        id = user["_id"],
+        avatar_url = user["avatar_url"],
+        gravatar_id = user["gravatar_id"],
+        url = API_ADDR .. "/users/" .. user["login"],
+        html_url = WEB_ADDR .. "/" .. user["login"],
+        followers_url = API_ADDR .. "/users/" .. user["login"] .. "/followers",
+        following_url = API_ADDR .. "/users/" .. user["login"] .. "/following{/other_user}",
+        gists_url = API_ADDR .. "/users/" .. user["login"] .. "/gists{/gist_id}",
+        starred_url = API_ADDR .. "/users/" .. user["login"] .. "/starred{/owner}{/repo}",
+        subscriptions_url = API_ADDR .. "/users/" .. user["login"] .. "/subscriptions",
+        organizations_url = API_ADDR .. "/users/" .. user["login"] .. "/orgs",
+        repos_url = API_ADDR .. "/users/" .. user["login"] .. "/repos",
+        events_url = API_ADDR .. "/users/" .. user["login"] .. "/events{/privacy}",
+        received_events_url = API_ADDR .. "/users/" .. user["login"] .. "/received_events",
+        type = "User",
+        site_admin = user["site_admin"]
+    };
+end
