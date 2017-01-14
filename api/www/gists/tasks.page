@@ -1,0 +1,25 @@
+<?npl
+include_once("../users/tasks.page");
+
+function get_gist_db(gist)
+    local result = {};
+    result["url"] = API_ADDR .. "/gists/" .. gist["id"];
+    result["forks_url"] = API_ADDR .. "/gists/" .. gist["id"] .. "/forks";
+    result["commits_url"] = API_ADDR .. "/gists/" .. gist["id"] .. "/commits";
+    result["id"] = gist["id"];
+    result["description"] = gist["description"];
+    result["public"] = gist["public"];
+    result["owner"] = get_user_db(gist["id"]);
+    result["user"] = gist["user"];
+    result["files"] = gist["files"];
+    result["truncated"] = gist["truncated"];
+    result["comments"] = result["comments"];
+    result["comments_url"] = API_ADDR .. "/gists/" .. gist["id"] .. "/comments";
+    result["html_url"] = GIST_ADDR .. "/" .. gist["id"];
+    result["git_pull_url"] = GIST_ADDR .. "/" .. gist["id"] .. ".git";
+    result["git_push_url"] = GIST_ADDR .. "/" .. gist["id"] .. ".git";
+    result["created_at"] = gist["created_at"];
+    result["updated_at"] = gist["updated_at"];
+    return result;
+end
+?>
