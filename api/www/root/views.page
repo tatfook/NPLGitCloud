@@ -1,0 +1,41 @@
+<?npl
+include_once("../tasks.page");
+
+local apis = {
+    current_user_url = API_ADDR .. "/user",
+    current_user_authorizations_html_url = WEB_ADDR .. "/settings/connections/applications{/client_id}",
+    authorizations_url = API_ADDR .. "/authorizations",
+    code_search_url = API_ADDR .. "/search/code?q={query}{&page,per_page,sort,order}",
+    commit_search_url = API_ADDR .. "/search/commits?q={query}{&page,per_page,sort,order}",
+    emails_url = API_ADDR .. "/user/emails",
+    emojis_url = API_ADDR .. "/emojis",
+    events_url = API_ADDR .. "/events",
+    feeds_url = API_ADDR .. "/feeds",
+    followers_url = API_ADDR .. "/user/followers",
+    following_url = API_ADDR .. "/user/following{/target}",
+    gists_url = API_ADDR .. "/gists{/gist_id}",
+    hub_url = API_ADDR .. "/hub",
+    issue_search_url = API_ADDR .. "/search/issues?q={query}{&page,per_page,sort,order}",
+    issues_url = API_ADDR .. "/issues",
+    keys_url = API_ADDR .. "/user/keys",
+    notifications_url = API_ADDR .. "/notifications",
+    organization_repositories_url = API_ADDR .. "/orgs/{org}/repos{?type,page,per_page,sort}",
+    organization_url = API_ADDR .. "/orgs/{org}",
+    public_gists_url = API_ADDR .. "/gists/public",
+    rate_limit_url = API_ADDR .. "/rate_limit",
+    repository_url = API_ADDR .. "/repos/{owner}/{repo}",
+    repository_search_url = API_ADDR .. "/search/repositories?q={query}{&page,per_page,sort,order}",
+    current_user_repositories_url = API_ADDR .. "/user/repos{?type,page,per_page,sort}",
+    starred_url = API_ADDR .. "/user/starred{/owner}{/repo}",
+    starred_gists_url = API_ADDR .. "/gists/starred",
+    team_url = API_ADDR .. "/teams",
+    user_url = API_ADDR .. "/users/{user}",
+    user_organizations_url = API_ADDR .. "/user/orgs",
+    user_repositories_url = API_ADDR .. "/users/{user}/repos{?type,page,per_page,sort}",
+    user_search_url = API_ADDR .. "/search/users?q={query}{&page,per_page,sort,order}"
+};
+
+function get_all_apis()
+    process_json_response(apis);
+end
+?>

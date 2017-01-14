@@ -1,23 +1,19 @@
 <?npl
-include_once("../tasks.page");
+include_once("./views.page");
 
-function is_emojis_api()
-    local url = request:url():match("^[^%?]*");
-    local method = request:GetMethod();
-    return url:match("^/emojis$") and method == "GET";
-end
-
-local emojis = {
-    ["+1"] = "https://github.global.ssl.fastly.net/images/icons/emoji/+1.png?v5",
-    ["-1"] = "https://github.global.ssl.fastly.net/images/icons/emoji/-1.png?v5",
-    ["100"] = "https://github.global.ssl.fastly.net/images/icons/emoji/100.png?v5",
-    ["1234"] = "https://github.global.ssl.fastly.net/images/icons/emoji/1234.png?v5",
-    ["8ball"] = "https://github.global.ssl.fastly.net/images/icons/emoji/8ball.png?v5",
-    ["a"] = "https://github.global.ssl.fastly.net/images/icons/emoji/a.png?v5",
-    ["ab"] = "https://github.global.ssl.fastly.net/images/icons/emoji/ab.png?v5"
+local apis = {
+    { "^/emojis$", "GET", get_all_emojis }
 };
 
-function go_emojis_api()
-    process_json_response(emojis);
+function check_emojis_api()
+    local url = request:url():match("^[^%?]*");
+    local method = request:GetMethod();
+    for i = 1, #apis do
+        if (url:match(apis[i][1]) and (method == apis[i][2])) then
+            apis[i][3]();
+            return true;
+        end
+    end
+    return false;
 end
 ?>
