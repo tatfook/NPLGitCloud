@@ -1,6 +1,7 @@
 <?npl
 API_ADDR = "https://api.nplgitcloud.com";
 WEB_ADDR = "https://www.nplgitcloud.com";
+GIST_ADDR = "https://gist.nplgitcloud.com";
 
 function get_pure_url(params)
     local url = request:url():match("^[^%?]*");

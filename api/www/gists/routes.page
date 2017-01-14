@@ -1,9 +1,32 @@
 <?npl
 include_once("../utils.page");
+include_once("../users/utils.page");
 
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
+local function get_gist_db(gist)
+    local result = {};
+    result["url"] = API_ADDR .. "/gists/" .. gist["id"];
+    result["forks_url"] = API_ADDR .. "/gists/" .. gist["id"] .. "/forks";
+    result["commits_url"] = API_ADDR .. "/gists/" .. gist["id"] .. "/commits";
+    result["id"] = gist["id"];
+    result["description"] = gist["description"];
+    result["public"] = gist["public"];
+    result["owner"] = get_user_db(gist["id"]);
+    result["user"] = gist["user"];
+    result["files"] = gist["files"];
+    result["truncated"] = gist["truncated"];
+    result["comments"] = result["comments"];
+    result["comments_url"] = API_ADDR .. "/gists/" .. gist["id"] .. "/comments";
+    result["html_url"] = GIST_ADDR .. "/" .. gist["id"];
+    result["git_pull_url"] = GIST_ADDR .. "/" .. gist["id"] .. ".git";
+    result["git_push_url"] = GIST_ADDR .. "/" .. gist["id"] .. ".git";
+    result["created_at"] = gist["created_at"];
+    result["updated_at"] = gist["updated_at"];
+    return result;
+end
 
 local function get_public_gists()
     local since = request:get("since");
@@ -19,7 +42,7 @@ local function get_public_gists()
     db.Gists:find({ ["-public+update_at"] = { true, gt = since, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows) results = rows; end);
     local ret = {};
     for i = 1, #results do
-        table.insert(ret, process_gist_db(results[i]));
+        table.insert(ret, get_gist_db(results[i]));
     end
     local count;
     db.Gists:count({ ["-public+update_at"] = { true, gt = since } }, function(err, rows) count = rows; end);
