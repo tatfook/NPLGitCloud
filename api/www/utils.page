@@ -2,7 +2,62 @@
 API_ADDR = "https://api.nplgitcloud.com";
 WEB_ADDR = "https://www.nplgitcloud.com";
 
-function process_json_response(body)
+function get_pure_url(params)
+    local url = request:url():match("^[^%?]*");
+    for i = 1, #params do
+        local value = request:get(params[i]);
+        if (value) then
+            if (not url:find("?")) then
+                url = url .. "?" .. params[i] .. "=" .. tostring(value);
+            else
+                url = url .. "&" .. params[i] .. "=" .. tostring(value);
+            end
+        end
+    return url;
+end
+
+local function add_link(links, url, page, rel)
+    if (link ~= "") then
+        links = links .. ", ";
+    end
+    if (not url:find("?")) then
+        links = links .. "<" .. url .. "?page=" .. tostring(page);
+    else
+        links = links .. "<" .. url .. "&page=" .. tostring(page);
+    end
+    local per_page = tonumber(request:get("per_page"));
+    if (per_page) then
+        links = links .. "&per_page=" .. per_page;
+    end
+    links = links .. '>; rel="' .. rel .. '"';
+end
+
+function process_pagination(url, count)
+    local page = tonumber(request:get("page"));
+    local per_page = tonumber(request:get("per_page"));
+    if (not page) then
+        page = 1;
+    end
+    if (not per_page) then
+        per_page = 30;
+    end
+    local links = "";
+    local last_page = math.floor((count - 1) / per_page) + 1;
+    if (page ~= last_page) then
+        add_link(links, url, page + 1, "next");
+        add_link(links, url, last_page, "last");
+    end
+    if (page ~= 1) then
+        add_link(links, url, page - 1, "prev");
+        add_link(links, url, 1, "first");
+    end
+    return links;
+end
+
+function process_json_response(body, headers)
+    for k, v in ipairs(headers) do
+        response:set_header(k, v);
+    end
     response:send_json(body);
 end
 ?>

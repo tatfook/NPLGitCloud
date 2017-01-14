@@ -17,13 +17,16 @@ local function get_public_gists()
     end
     local results;
     db.Gists:find({ ["-public+update_at"] = { true, gt = since, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows) results = rows; end);
-    local url = get_pure_url();
+    local ret = {};
+    for i = 1, #results do
+        table.insert(ret, process_gist_db(results[i]));
+    end
     local count;
     db.Gists:count({ ["-public+update_at"] = { true, gt = since } }, function(err, rows) count = rows; end);
     local headers = {
-        ["Link"] = process_pagination(url, page, per_page, count)
+        ["Link"] = process_pagination(get_pure_url({ "since" }), count)
     };
-    process_json_response(results, headers);
+    process_json_response(ret, headers);
 end
 
 local apis = {
