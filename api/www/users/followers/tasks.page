@@ -1,16 +1,40 @@
 <?npl
+include_once("../../tasks.page");
+include_once("../tasks.page");
+
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
 
 function get_followers_count(username)
     local count;
-    db.UsersFollowers:count({ to = username }, function(err, rows) count = rows; end);
+    db.Followers:count({ to = username }, function(err, rows) count = rows; end);
     return count;
 end
 
 function get_following_count(username)
     local count;
-    db.UsersFollowers:count({ from = username}, function(err, rows) count = rows; end);
+    db.Followers:count({ from = username}, function(err, rows) count = rows; end);
     return count;
 end
+
+function get_followers_by_username(username)
+    local followers = {};
+    db.Followers:find({ to = username }, function(err, rows)
+        for i = 1, #rows do
+            followers[i] = get_user_by_username(rows[i]["from"]);
+        end
+    end);
+    return followers;
+end
+
+function get_following_by_username(username)
+    local following = {};
+    db.Followers:find({ from = username), function(err, rows)
+        for i = 1, #rows do
+            following[i] = get_user_by_username(rows[i]["to"]);
+        end
+    end);
+    return following;
+end
+?>

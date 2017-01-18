@@ -1,0 +1,20 @@
+<?npl
+include_once("./views.page");
+
+local apis = {
+    { "^/users/[^%s]+/followers", "GET", list_followers_single_user },
+    { "^/users/[^%s]+/following", "GET", list_following_single_user }
+};
+
+function check_followers_apis()
+    local url = request:url():match("^[^%?]*");
+    local method = request:GetMethod();
+    for i = 1, #apis do
+        if (url:match(apis[i][1]) and (method == apis[i][2])) then
+            apis[i][3]();
+            return true;
+        end
+    end
+    return false;
+end
+?>

@@ -7,3 +7,4 @@ function get_single_user()
     local record = get_user_public_by_username(username);
     process_json_response(record);
 end
+?>

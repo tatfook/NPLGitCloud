@@ -1,0 +1,16 @@
+<?npl
+include_once("../tasks.page");
+include_once("./tasks.page");
+
+function list_followers_single_user()
+    local username = request:url():match("^[^%?]*"):match("^/users/([^%s]+)/followers$");
+    local followers = get_followers_by_username(username);
+    process_json_response(followers);
+end
+
+function list_following_single_user()
+    local username = request:url():match("^[^%?]*"):match("^/users/([^%s]+)/following$");
+    local following = get_following_by_username(username);
+    process_json_response(following);
+end
+?>
