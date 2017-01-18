@@ -1,5 +1,4 @@
 <?npl
-include_once("../../tasks.page");
 include_once("../tasks.page");
 
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");

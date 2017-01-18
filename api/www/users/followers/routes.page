@@ -3,7 +3,9 @@ include_once("./views.page");
 
 local apis = {
     { "^/users/[^%s]+/followers", "GET", list_followers_single_user },
-    { "^/users/[^%s]+/following", "GET", list_following_single_user }
+    { "^/user/followers", "GET", list_followers_auth_user },
+    { "^/users/[^%s]+/following", "GET", list_following_single_user },
+    { "^/user/following", "GET", list_following_auth_user }
 };
 
 function check_followers_apis()

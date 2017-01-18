@@ -1,5 +1,5 @@
 <?npl
-include_once("../tasks.page");
+include_once("../../tasks.page");
 include_once("./tasks.page");
 
 function list_followers_single_user()
@@ -8,9 +8,21 @@ function list_followers_single_user()
     process_json_response(followers);
 end
 
+function list_followers_auth_user()
+    local username = get_auth_user();
+    local followers = get_followers_by_username(username);
+    process_json_response(followers);
+end
+
 function list_following_single_user()
     local username = request:url():match("^[^%?]*"):match("^/users/([^%s]+)/following$");
     local following = get_following_by_username(username);
+    process_json_response(following);
+end
+
+function list_following_auth_user()
+    local username = get_auth_user();
+    local followers = get_following_by_username(username);
     process_json_response(following);
 end
 ?>
