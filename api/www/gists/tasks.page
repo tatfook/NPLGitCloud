@@ -1,6 +1,10 @@
 <?npl
 include_once("../users/tasks.page");
 
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
 function get_gist_db(gist)
     return {
         url = API_ADDR .. "/gists/" .. gist["id"],
@@ -21,5 +25,11 @@ function get_gist_db(gist)
         created_at = gist["created_at"],
         updated_at = gist["updated_at"]
     };
+end
+
+function get_public_gists_count(username)
+    local count;
+    db.Gists:count({ owner = username }, function(err, rows) count = rows; end);
+    return count;
 end
 ?>

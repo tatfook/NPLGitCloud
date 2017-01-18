@@ -1,0 +1,16 @@
+<?npl
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
+function get_followers_count(username)
+    local count;
+    db.UsersFollowers:count({ to = username }, function(err, rows) count = rows; end);
+    return count;
+end
+
+function get_following_count(username)
+    local count;
+    db.UsersFollowers:count({ from = username}, function(err, rows) count = rows; end);
+    return count;
+end

@@ -1,4 +1,8 @@
 <?npl
+include_once("./followers/tasks.page");
+include_once("../gists/tasks.page");
+include_once("../repos/tasks.page");
+
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
@@ -25,9 +29,34 @@ function get_user_db(user)
     };
 end
 
+function add_public_info(info, record)
+    info["name"] = record["name"];
+    info["company"] = record["company"];
+    info["blog"] = record["blog"];
+    info["location"] = record["location"];
+    info["email"] = record["email"];
+    info["hireable"] = record["hireable"];
+    info["bio"] = record["bio"];
+    local username = record["login"];
+    info["public_repos"] = get_public_repos_count(username);
+    info["public_gists"] = get_public_gists_count(username);
+    info["followers"] = get_followers_count(username);
+    info["following"] = get_following_count(username);
+    info["created_at"] = record["created_at"];
+    info["updated_at"] = record["updated_at"];
+end
+
 function get_user_by_username(username)
     local record;
     db.Users:findOne({ login = username }, function(err, user) record = user; end);
     return get_user_db(record);
+end
+
+function get_user_public_by_username(username)
+    local record;
+    db.Users:findOne({ login = username }, function(err, user) record = user; end);
+    local info = get_user_db(record);
+    add_public_info(info, record);
+    return info;
 end
 ?>
