@@ -27,9 +27,25 @@ function get_gist_db(gist)
     };
 end
 
+function get_public_gists_since(since, page, per_page)
+    local results = {};
+    db.Gists:find({ ["-public+update_at"] = { true, gt = since, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows)
+        for i = 1, #rows do
+            results[i] = get_gist_db(rows[i]);
+        end
+    end);
+    return results;
+end
+
+function get_public_gists_count_since(since)
+    local count;
+    db.Gists:count({ ["-public+update_at"] = { true, gt = since } }, function(err, rows) count = rows; end);
+    return count;
+end
+
 function get_public_gists_count(username)
     local count;
-    db.Gists:count({ owner = username }, function(err, rows) count = rows; end);
+    db.Gists:count({ owner = username, public = true }, function(err, rows) count = rows; end);
     return count;
 end
 ?>

@@ -16,17 +16,11 @@ function get_public_gists()
     if (not per_page) then
         per_page = 30;
     end
-    local results;
-    db.Gists:find({ ["-public+update_at"] = { true, gt = since, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows) results = rows; end);
-    local ret = {};
-    for i = 1, #results do
-        table.insert(ret, get_gist_db(results[i]));
-    end
-    local count;
-    db.Gists:count({ ["-public+update_at"] = { true, gt = since } }, function(err, rows) count = rows; end);
+    local results = get_public_gists_since(since, page, per_page);
+    local count = get_public_gists_count_since(since);
     local headers = {
         ["Link"] = process_pagination(get_pure_url({ "since" }), count)
     };
-    process_json_response(ret, headers);
+    process_json_response(results, headers);
 end
 ?>
