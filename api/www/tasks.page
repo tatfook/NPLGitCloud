@@ -57,8 +57,10 @@ function process_pagination(url, count)
 end
 
 function process_json_response(body, headers)
-    for k, v in ipairs(headers) do
-        response:set_header(k, v);
+    if (headers) then
+        for k, v in ipairs(headers) do
+            response:set_header(k, v);
+        end
     end
     response:send_json(body);
 end
