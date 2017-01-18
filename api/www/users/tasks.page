@@ -38,10 +38,10 @@ function add_public_info(info, record)
     info["hireable"] = record["hireable"];
     info["bio"] = record["bio"];
     local username = record["login"];
-    info["public_repos"] = get_public_repos_count(username);
-    info["public_gists"] = get_public_gists_count(username);
-    info["followers"] = get_followers_count(username);
-    info["following"] = get_following_count(username);
+    info["public_repos"] = get_public_repos_count_by_username(username);
+    info["public_gists"] = get_public_gists_count_by_username(username);
+    info["followers"] = get_followers_count_by_username(username);
+    info["following"] = get_following_count_by_username(username);
     info["created_at"] = record["created_at"];
     info["updated_at"] = record["updated_at"];
 end

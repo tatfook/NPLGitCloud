@@ -43,7 +43,7 @@ function get_public_gists_count_since(since)
     return count;
 end
 
-function get_public_gists_count(username)
+function get_public_gists_count_by_username(username)
     local count;
     db.Gists:count({ owner = username, public = true }, function(err, rows) count = rows; end);
     return count;

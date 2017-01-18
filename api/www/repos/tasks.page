@@ -3,9 +3,9 @@ NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
 
-function get_public_repos_count(username)
+function get_public_repos_count_by_username(username)
     local count;
-    db.Repos:count({ owner = username }, function(err, rows) count = rows; end);
+    db.Repos:count({ owner = username, private = false }, function(err, rows) count = rows; end);
     return count;
 end
 ?>
