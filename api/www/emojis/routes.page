@@ -5,7 +5,7 @@ local apis = {
     { "^/emojis$", "GET", get_all_emojis }
 };
 
-function check_emojis_api()
+function check_emojis_apis()
     local url = request:url():match("^[^%?]*");
     local method = request:GetMethod();
     for i = 1, #apis do

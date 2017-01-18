@@ -4,13 +4,15 @@ include_once("./emojis/routes.page");
 include_once("./gists/routes.page");
 include_once("./users/routes.page");
 include_once("./users/followers/routes.page");
+include_once("./users/emails/routes.page");
 
 local apis = {
-    check_root_api,
-    check_emojis_api,
-    check_gists_api,
-    check_users_api,
-    check_followers_api
+    check_root_apis,
+    check_emojis_apis,
+    check_gists_apis,
+    check_users_apis,
+    check_followers_apis,
+    check_emails_apis,
 };
 
 for i = 1, #apis do

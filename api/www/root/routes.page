@@ -5,7 +5,7 @@ local apis = {
     { "^/$", "GET", get_all_apis }
 };
 
-function check_root_api()
+function check_root_apis()
     local url = request:url():match("^[^%?]*");
     local method = request:GetMethod();
     for i = 1, #apis do
