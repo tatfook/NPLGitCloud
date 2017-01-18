@@ -25,4 +25,25 @@ function list_following_auth_user()
     local followers = get_following_by_username(username);
     process_json_response(following);
 end
+
+function check_following_auth_user()
+    local username = get_auth_user();
+    local target_user = request:url():match("^[^%?]*"):match("^/user/following/([^%s]+)");
+    local is_following = check_following(username, target_user);
+    if (is_following) then
+        response:status(204):send();
+    else
+        response:status(404):send();
+    end
+end
+
+function check_following_single_user()
+    local username, target_user = request:url():match("^[^%?]*"):match("^/users/([^%s]+)/following/([^%s]+)");
+    local is_following = check_following(username, target_user);
+    if (is_following) then
+        response:status(204):send();
+    else
+        response:status(404):send();
+    end
+end
 ?>

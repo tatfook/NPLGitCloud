@@ -36,4 +36,16 @@ function get_following_by_username(username)
     end);
     return following;
 end
+
+function check_following(username, target_user)
+    local result;
+    db.Followers:find({ from = username, to = target_user }, function(err, rows)
+        if (#rows == 0) then
+            result = false;
+        else
+            result = true;
+        end
+    end);
+    return result;
+end
 ?>
