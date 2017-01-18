@@ -14,6 +14,7 @@ function get_pure_url(params)
                 url = url .. "&" .. params[i] .. "=" .. tostring(value);
             end
         end
+    end
     return url;
 end
 
