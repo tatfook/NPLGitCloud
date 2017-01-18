@@ -2,6 +2,7 @@
 API_ADDR = "https://api.nplgitcloud.com";
 WEB_ADDR = "https://www.nplgitcloud.com";
 GIST_ADDR = "https://gist.nplgitcloud.com";
+DOCS_ADDR = "https://developer.nplgitcloud.com";
 
 function get_pure_url(params)
     local url = request:url():match("^[^%?]*");
@@ -63,5 +64,13 @@ function process_json_response(body, headers)
         end
     end
     response:send_json(body);
+end
+
+function process_failed_login()
+    local body = {
+        message = "Bad credentials",
+        documentation_url = DOCS_ADDR
+    };
+    response:status(401):send_json(body);
 end
 ?>

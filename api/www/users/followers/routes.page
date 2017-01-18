@@ -6,8 +6,10 @@ local apis = {
     { "^/user/followers", "GET", list_followers_auth_user },
     { "^/users/[^%s]+/following", "GET", list_following_single_user },
     { "^/user/following", "GET", list_following_auth_user },
-    { "^/user/following/[^%s]+", check_following_auth_user },
-    { "^/users/[^%s]+/following/[^%s]+", check_following_single_user }
+    { "^/user/following/[^%s]+", "GET", check_following_auth_user },
+    { "^/users/[^%s]+/following/[^%s]+", "GET", check_following_single_user },
+    { "^/user/following/[^%s]+", "PUT", follow_user },
+    { "^/user/following/[^%s]+", "DELETE", unfollow_user }
 };
 
 function check_followers_apis()

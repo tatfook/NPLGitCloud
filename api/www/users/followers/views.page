@@ -9,9 +9,13 @@ function list_followers_single_user()
 end
 
 function list_followers_auth_user()
-    local username = get_auth_user();
-    local followers = get_followers_by_username(username);
-    process_json_response(followers);
+    if (is_authenticated()) then
+        local username = get_auth_user();
+        local followers = get_followers_by_username(username);
+        process_json_response(followers);
+    else
+        process_failed_login();
+    end
 end
 
 function list_following_single_user()
@@ -21,19 +25,27 @@ function list_following_single_user()
 end
 
 function list_following_auth_user()
-    local username = get_auth_user();
-    local followers = get_following_by_username(username);
-    process_json_response(following);
+    if (is_authenticated()) then
+        local username = get_auth_user();
+        local followers = get_following_by_username(username);
+        process_json_response(following);
+    else
+        process_failed_login();
+    end
 end
 
 function check_following_auth_user()
-    local username = get_auth_user();
-    local target_user = request:url():match("^[^%?]*"):match("^/user/following/([^%s]+)");
-    local is_following = check_following(username, target_user);
-    if (is_following) then
-        response:status(204):send();
+    if (is_authenticated()) then
+        local username = get_auth_user();
+        local target_user = request:url():match("^[^%?]*"):match("^/user/following/([^%s]+)");
+        local is_following = check_following(username, target_user);
+        if (is_following) then
+            response:status(204):send();
+        else
+            response:status(404):send();
+        end
     else
-        response:status(404):send();
+        process_failed_login();
     end
 end
 
@@ -44,6 +56,28 @@ function check_following_single_user()
         response:status(204):send();
     else
         response:status(404):send();
+    end
+end
+
+function follow_user()
+    if (is_authenticated() and oauth_scope("user:follow")) then
+        local username = get_auth_user();
+        local target_user = request:url():match("^[^%s]*"):match("^/user/following/([^%s]+)");
+        follow(username, target_user);
+        response:status(204):send();
+    else
+        process_failed_login();
+    end
+end
+
+function unfollow_user()
+    if (is_authenticated and oauth_scope("user:follow")) then
+        local username = get_auth_user();
+        local target_user = request:url():match("^[^%s]*"):match("^/user/following/([^%s]+)");
+        unfollow(username, target_user);
+        response:status(204):send();
+    else
+        process_failed_login();
     end
 end
 ?>

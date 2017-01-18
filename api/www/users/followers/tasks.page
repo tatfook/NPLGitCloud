@@ -48,4 +48,20 @@ function check_following(username, target_user)
     end);
     return result;
 end
+
+function follow(username, target_user)
+    db.Followers:find({ from = username, to = target_user }, function(err, rows)
+        if (#row == 0) then
+            db.Followers:insertOne(nil, { from = username, to = target_user }, function(err, data) end);
+        end
+    end);
+end
+
+function unfollow(username, target_user)
+    db.Followers:find({ from = username, to = target_user }, function(err, rows)
+        if (#rows ~= 0) then
+            db.Followers:deleteOne({ from = username, to = target_user }, function(err, count) end);
+        end
+    end);
+end
 ?>
