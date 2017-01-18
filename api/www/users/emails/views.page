@@ -1,0 +1,26 @@
+<?npl
+include_once("../../tasks.page");
+include_once("./tasks.page");
+
+function get_user_emails()
+    if (is_authenticated()) then
+        local username = get_auth_user();
+		local page = tonumber(request:get("page"));
+		local per_page = tonumber(request:get("per_page"));
+		if (not page) then
+			page = 1;
+		end
+		if (not per_page) then
+			per_page = 30;
+		end
+		local results = get_emails_by_username(username, page, per_page);
+		local count = get_emails_count_by_username(username);
+		local headers = {
+			["Link"] = process_pagination(get_pure_url({}), count);
+		};
+		process_json_response(results, headers);
+    else
+        process_failed_login();
+    end
+end
+?>

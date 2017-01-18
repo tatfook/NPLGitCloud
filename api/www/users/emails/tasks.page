@@ -1,0 +1,29 @@
+<?npl
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
+function get_email_db(record)
+    return {
+        email = record["email"],
+        verified = record["verified"],
+        primary = record["primary"]
+    };
+end
+
+function get_emails_by_username(username, page, per_page)
+	local results = {};
+	db.Emails:find({ ["+user"] = { username, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows)
+		for i = 1, #rows do
+			results[i] = get_email_db(rows[i]);
+		end
+	end);
+    return results;
+end
+
+function get_emails_count_by_username(username)
+	local count;
+	db.Emails:count({ ["+user"] = { username }, function(err, rows) count = rows; end);
+    return count;
+end
+?>
