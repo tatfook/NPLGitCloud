@@ -1,22 +1,20 @@
 #include <string.h>
 #include <time.h>
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
+#include <lua5.1/lua.hpp>
+#include <lua5.1/lauxlib.h>
+#include <lua5.1/lualib.h>
 #include <git2.h>
 
 #include "gitcore.h"
 #include "util.h"
 
 
-
-
 /**
- * param: repo name, file path
+ * param: repo name, branch name, file path
  * return: error code, content string
  *
  **/
-static int getContent(lua_State* L){
+int getContent(lua_State* L){
 	const char* repoStr = luaL_checkstring(L,1);
 	const char* branchStr = luaL_checkstring(L, 2);
     const char* pathStr = luaL_checkstring(L,3);
@@ -65,7 +63,7 @@ static int getContent(lua_State* L){
  * return: error code
  *
  **/
-static int repoInit(lua_State* L){
+int repoInit(lua_State* L){
 	const char* repoStr = luaL_checkstring(L, 1);
 	unsigned int isBare = luaL_checknumber(L, 2);
 
@@ -86,7 +84,7 @@ static int repoInit(lua_State* L){
  * return: error code
  *
  **/
-static int updateFile(lua_State* L){
+int updateFile(lua_State* L){
 	const char* repoStr = luaL_checkstring(L, 1);
 	const char* pathStr = luaL_checkstring(L, 2);
 	const char* commitMsg = luaL_checkstring(L, 3);
@@ -148,7 +146,7 @@ static int updateFile(lua_State* L){
  *
  **/
 //Unresolved Problem: when the bare git repo is empty
-static int addFile(lua_State* L){
+int addFile(lua_State* L){
     const char* repoStr = luaL_checkstring(L, 1);
     const char* pathStr = luaL_checkstring(L, 2);
     const char* commitMsg = luaL_checkstring(L, 3);
@@ -227,7 +225,7 @@ static int addFile(lua_State* L){
  * return: error code
  *
  **/
-static int deleteFile(lua_State *L){
+int deleteFile(lua_State *L){
     const char* repoStr = luaL_checkstring(L, 1);
     const char* pathStr = luaL_checkstring(L, 2);
     const char* commitMsg = luaL_checkstring(L, 3);
@@ -281,7 +279,7 @@ static int deleteFile(lua_State *L){
  * return: error code
  *
  **/
-static int deleteRepo(lua_State *L){
+int deleteRepo(lua_State *L){
     const char* repoStr = luaL_checkstring(L, 1);
 
     git_repository* repo;
@@ -328,7 +326,7 @@ int tree_walk_cb(const char *root, const git_tree_entry *entry, void *payload){
  * return: error code, tree oid, entry1 path, entry1 filemode, entry1 oid, entry2 ...
  *
  **/
-static int traverseTree(lua_State *L){
+int traverseTree(lua_State *L){
     const char* repoStr = luaL_checkstring(L, 1);
     const char* tree_spec = luaL_checkstring(L, 2);
 
@@ -373,7 +371,7 @@ static int traverseTree(lua_State *L){
 
 
 
-int luaopen_gitcore (lua_State *L) {
+extern "C" int luaopen_gitcore (lua_State *L) {
 
     lua_register(L, "getContent", getContent);
     lua_register(L, "repoInit", repoInit);
@@ -384,4 +382,5 @@ int luaopen_gitcore (lua_State *L) {
     lua_register(L, "traverseTree", traverseTree);
     return 1;
 }
+
 

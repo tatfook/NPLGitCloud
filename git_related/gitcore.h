@@ -11,10 +11,13 @@
  *
  **/
 #include <string.h>
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
+#include <lua5.1/lua.h>
+#include <lua5.1/lauxlib.h>
+#include <lua5.1/lualib.h>
 #include <git2.h>
+
+#include "INPLRuntimeState.h"
+#include "NPLInterface.hpp"
 
 struct tree_traversal_cb_data {
 	int cb_times;
@@ -30,5 +33,14 @@ struct tree_traversal_cb_data {
 #define TreeInsertFailure 105
 #define IndexAddFailure 106
 #define IndexReadTreeFailure 107
+#define InvalidCommand 108
+
+int getContent(lua_State *L);
+int repoInit(lua_State *L);
+int updateFile(lua_State *L);
+int addFile(lua_State *L);
+int deleteFile(lua_State *L);
+int deleteRepo(lua_State *L);
+int traverseTree(lua_State *L);
 
 #endif
