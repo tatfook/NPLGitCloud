@@ -26,4 +26,12 @@ function get_emails_count_by_username(username)
 	db.Emails:count({ ["+user"] = { username }, function(err, rows) count = rows; end);
     return count;
 end
+
+function add_email(username, email_address)
+    db.Emails:find({ email = email_address }, function(err, rows)
+        if (#rows == 0) then
+            db.Emails:insertOne(nil, { user = username, email = email_address, verified = false, primary = false }, function(err, data) end);
+        end
+    end);
+end
 ?>
