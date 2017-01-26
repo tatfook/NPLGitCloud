@@ -46,6 +46,16 @@ function add_public_info(info, record)
     info["updated_at"] = record["updated_at"];
 end
 
+function add_private_info(info, record)
+    local username = record["login"];
+    info["total_private_repos"] = get_total_private_repos_count_by_username(username);
+    info["owned_private_repos"] = get_owned_private_repos_count_by_username(username);
+    info["private_gists"] = get_private_gists_count_by_username(username);
+    info["disk_usage"] = record["disk_usage"];
+    info["collaborators"] = get_collaborators_count_by_username(username);
+    info["plan"] = record["plan"];
+end
+
 function get_user_by_username(username)
     local record;
     db.Users:findOne({ login = username }, function(err, user) record = user; end);
@@ -57,6 +67,15 @@ function get_user_public_by_username(username)
     db.Users:findOne({ login = username }, function(err, user) record = user; end);
     local info = get_user_db(record);
     add_public_info(info, record);
+    return info;
+end
+
+function get_user_private_by_username(username)
+    local record;
+    db.Users:findOne({ login = username }, function(err, user) record = user; end);
+    local info = get_user_db(record);
+    add_public_info(info, record);
+    add_private_info(info, record);
     return info;
 end
 ?>

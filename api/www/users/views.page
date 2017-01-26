@@ -7,4 +7,12 @@ function get_single_user()
     local record = get_user_public_by_username(username);
     process_json_response(record);
 end
+
+function get_current_user()
+    if (is_authenticated()) then
+        local username = get_auth_user();
+        local record = get_user_private_by_username(username);
+        process_json_response(record);
+    end
+end
 ?>
