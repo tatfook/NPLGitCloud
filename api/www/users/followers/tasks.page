@@ -29,7 +29,7 @@ end
 
 function get_following_by_username(username)
     local following = {};
-    db.Followers:find({ from = username), function(err, rows)
+    db.Followers:find({ from = username }, function(err, rows)
         for i = 1, #rows do
             following[i] = get_user_by_username(rows[i]["to"]);
         end
