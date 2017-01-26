@@ -1,0 +1,37 @@
+NPL bin dir: /home/hephaestus/Documents/NPLRuntime/ParaWorld/bin64/
+no packages at: /home/hephaestus/Documents/NPLRuntime/ParaWorld/packages
+ParaEngine Root Dir is /mnt/hgfs/NPLGitCloud/
+search path: /home/hephaestus/Documents/NPLRuntime/npl_packages/main/
+./packages dir: /mnt/hgfs/NPLGitCloud/
+main loop: dgit_entrance.lua 
+CAssetManifest loaded 0 files
+CAsyncLoader is started with 1 IO thread and 2 worker thread
+warning: ParaEngine::LoadLibrary( ./libPhysicsBT.so ) failed because ./libPhysicsBT.so: cannot open shared object file: No such file or directory
+Failed loading plug-in: ./libPhysicsBT.so
+note: no physics engine found, null physics is used 
+2017-01-25 15:25:40|1148573632|ParaEngineServer started
+(main) state is now running in a separate thread. It is more responsive now. 
+isInit
+NPL server 0.1 is listening on 0.0.0.0:1130
+TCPKeepAlive: false
+AppKeepAlive: false
+IdleTimeout: true
+IdleTimeoutPeriod: 120000
+UseCompression(incoming): false
+CompressionLevel: -1
+CompressionThreshold: 204800
+=====dgit node is now started=========
+
+[string "dgit/dgit.lua"]:30: attempt to call a table value <Runtime error>
+NPL max pending incoming connections allowed is 1000
+2017-01-25 15:25:42|1148573632|0|service is stopped|Line 39: void ParaEngine::CParaEngineService::StopService():/home/hephaestus/Documents/NPLRuntime/Client/trunk/ParaEngineClient/Core/ParaEngineService.cpp|
+error: CNPLNetServer unable to accept incoming connection, because: Operation canceled
+current connections 0
+NPL State main exited
+NPL State dgit_server exited
+CAsyncLoader worker thread 0 of 5 is exited
+CAsyncLoader worker thread 1 of 5 is exited
+CAsyncLoader worker thread 2 of 5 is exited
+CAsyncLoader worker thread 3 of 5 is exited
+CAsyncLoader worker thread 4 of 5 is exited
+CAsyncLoader IO thread is exited
