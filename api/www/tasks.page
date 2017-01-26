@@ -73,4 +73,8 @@ function process_failed_login()
     };
     response:status(401):send_json(body);
 end
+
+function process_success_response()
+    response:status(204):send();
+end
 ?>

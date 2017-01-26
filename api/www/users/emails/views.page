@@ -27,7 +27,7 @@ end
 function add_user_emails()
     if (is_authenticated() and oauth_scope("user:email")) then
         local username = get_auth_user();
-        local emails = json_decode(request:GetBody())
+        local emails = json_decode(request:GetBody());
         local page = tonumber(request:get("page"));
         local per_page = tonumber(request:get("per_page"))
         if (not page) then
@@ -45,6 +45,19 @@ function add_user_emails()
             ["Link"] = process_pagination(get_pure_url({}), count)
         };
         process_json_response(results, headers);
+    else
+        process_failed_login();
+    end
+end
+
+function delete_user_emails()
+    if (is_authenticated() and oauth_scope("user:email")) then
+        local username = get_auth_user();
+        local emails = json_decode(request:GetBody());
+        for i = 1, #emails do
+            delete_email(user, emails[i]);
+        end
+        process_success_response();
     else
         process_failed_login();
     end

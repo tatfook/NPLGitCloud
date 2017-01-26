@@ -71,7 +71,7 @@ function follow_user()
 end
 
 function unfollow_user()
-    if (is_authenticated and oauth_scope("user:follow")) then
+    if (is_authenticated() and oauth_scope("user:follow")) then
         local username = get_auth_user();
         local target_user = request:url():match("^[^%s]*"):match("^/user/following/([^%s]+)");
         unfollow(username, target_user);

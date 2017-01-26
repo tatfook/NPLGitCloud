@@ -3,7 +3,8 @@ include_once("./views.page");
 
 local apis = {
     { "^/user/emails", "GET", get_user_emails },
-    { "^/user/emails", "POST", add_user_emails }
+    { "^/user/emails", "POST", add_user_emails },
+    { "^/user/emails", "DELETE", delete_user_emails }
 };
 
 function check_emails_apis()
