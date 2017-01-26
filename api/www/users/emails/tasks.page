@@ -23,7 +23,7 @@ end
 
 function get_emails_count_by_username(username)
 	local count;
-	db.Emails:count({ ["+user"] = { username }, function(err, rows) count = rows; end);
+	db.Emails:count({ ["+user"] = { username } }, function(err, rows) count = rows; end);
     return count;
 end
 
