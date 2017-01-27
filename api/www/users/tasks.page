@@ -90,4 +90,20 @@ function update_user_by_username(username, body)
     record["bio"] = body["bio"];
     db.Users:updateOne({ login = username }, record, function(err, data) end);
 end
+
+function get_users(page, per_page)
+    local results = {};
+    db.Users:find({ _id = { gt = -1, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows)
+        for i = 1, #rows do
+            results[i] = get_user_db(rows[i]);
+        end
+    end);
+    return results;
+end
+
+function get_users_count()
+    local count;
+    db.Users:count({}, function(err, rows) count = rows; end);
+    return count;
+end
 ?>

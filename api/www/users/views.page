@@ -25,4 +25,25 @@ function update_current_user()
         process_json_response(record);
     end
 end
+
+function get_all_users()
+    if (is_authenticated()) then
+        local page = tonumber(request:get("page"));
+        local per_page = tonumber(request:get("per_page"));
+        if (not page) then
+            page = 1;
+        end
+        if (not per_page) then
+            per_page = 30;
+        end
+        local results = get_users(page, per_page);
+        local count = get_users_count();
+        local headers = {
+            ["Link"] = process_pagination(get_pure_url(), count)
+        };
+        process_json_response(results, headers);
+    else
+        process_failed_login();
+    end
+end
 ?>

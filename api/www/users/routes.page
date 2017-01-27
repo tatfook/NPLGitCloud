@@ -4,7 +4,8 @@ include_once("./views.page");
 local apis = {
     { "^/users/[^%s]+$", "GET", get_single_user },
     { "^/user$", "GET", get_current_user },
-    { "^/user$", "PATCH", update_current_user }
+    { "^/user$", "PATCH", update_current_user },
+    { "^/users$", "GET", get_all_users }
 };
 
 function check_users_apis()
