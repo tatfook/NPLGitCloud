@@ -78,4 +78,16 @@ function get_user_private_by_username(username)
     add_private_info(info, record);
     return info;
 end
+
+function update_user_by_username(username, body)
+    local record = {};
+    record["name"] = body["name"];
+    record["email"] = body["email"];
+    record["blog"] = body["blog"];
+    record["company"] = body["company"];
+    record["location"] = body["location"];
+    record["hireable"] = body["hireable"];
+    record["bio"] = body["bio"];
+    db.Users:updateOne({ login = username }, record, function(err, data) end);
+end
 ?>

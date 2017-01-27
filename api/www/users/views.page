@@ -15,4 +15,14 @@ function get_current_user()
         process_json_response(record);
     end
 end
+
+function update_current_user()
+    if (is_authenticated()) then
+        local username = get_auth_user();
+        local body = json_decode(request:GetBody());
+        update_user_by_username(username, body);
+        local record = get_user_private_by_username(username);
+        process_json_response(record);
+    end
+end
 ?>
