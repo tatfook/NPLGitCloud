@@ -3,15 +3,17 @@ NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
 
+NPL.load("(gl)script/ide/timer.lua");
+
 function get_rate_limit_by_type(api_type, user_type)
     if (api_type == "core") then
-        if (user_type == "auth") then
+        if (user_type == "auth" or check_oauth_client(request:get("client_id"), request:get("client_secret"))) then
             return 5000;
         else
             return 60;
         end
     else
-        if (user_type == "auth") then
+        if (user_type == "auth" or check_oauth_client(request:get("client_id"), request:get("client_secret"))) then
             return 30;
         else
             return 10;
@@ -22,10 +24,14 @@ end
 function get_rate_limit_by_username(type, username)
     local result;
     db.RateLimitUsername:findOne({ type = type, username = username }, function(err, row)
-        result = {
-            remaining = get_rate_limit_by_type(type, "auth") - row["count"],
-            reset = row["reset"]
-        };
+        if (row) then
+            result = {
+                remaining = get_rate_limit_by_type(type, "auth") - row["count"],
+                reset = row["reset"]
+            };
+        else
+            result = nil;
+        end
     end);
     return result;
 end
@@ -33,11 +39,83 @@ end
 function get_rate_limit_by_ip(type, ip)
     local result;
     db.RateLimitIp:findOne({ type = type, ip = ip }, function(err, row)
-        result = {
-            remaining = get_rate_limit_by_type(type, "ip") - row["count"],
-            reset = row["reset"]
-        };
+        if (row) then
+            result = {
+                remaining = get_rate_limit_by_type(type, "ip") - row["count"],
+                reset = row["reset"]
+            };
+        else
+            result = nil;
+        end
     end);
     return result;
+end
+
+function reset_rate_limit_by_username(username, current_time, type)
+    db.RateLimitUsername:insertOne({ username = username }, { username = username, count = 0, reset = current_time, type = type }, function(err, row) end);
+end
+
+function reset_rate_limit_by_ip(ip, current_time, type)
+    db.RateLimitIp:insertOne({ ip = ip }, { ip = ip, count = 0, reset = current_time, type = type }, function(err, row) end);
+end
+
+function check_rate_limit()
+    local limit, remaining, reset;
+    if (is_authenticated()) then
+        local type = get_current_rate_limit_type();
+        local username = get_auth_user();
+        limit = get_rate_limit_by_type(type, "auth");
+        local current = get_rate_limit_by_username(type, username);
+        remaining = current["remaining"];
+        reset = current["reset"];
+        if (current) then
+            if (remaining > 0) then
+                remaining = remaining - 1;
+                db.RateLimitUsername:updateOne({ username = username }, { count = limit - remaining }, function(err, row) end);
+                return true;
+            else
+                local current_time = math.floor(commonlib.TimerManager.GetCurrentTime() / 1000);
+                if (current_time - reset > 3600) then
+                    reset = current_time;
+                    reset_rate_limit_by_username(username, current_time, type);
+                    return true;
+                end
+                return false;
+            end
+        else
+            local current_time = math.floor(commonlib.TimeManager.GetCurrentTime() / 1000);
+            reset = current_time;
+            reset_rate_limit_by_username(username, current_time, type);
+        end
+    else
+        local type = get_current_rate_limit_type();
+        local ip = request:getpeername();
+        limit = get_rate_limit_by_type(type, "ip");
+        local current = get_rate_limit_by_ip(type, username);
+        remaining = current["remaining"];
+        reset = current["reset"];
+        if (current) then
+            if (remaining > 0) then
+                remaining = remaining - 1;
+                db.RateLimitIp:updateOne({ ip = ip }, { count = limit - remaining }, function(err, row) end);
+                return true;
+            else
+                local current_time = math.floor(commonlib.TimeManager.GetCurrentTime() / 1000);
+                if (current_time - reset > 3600) then
+                    reset = current_time;
+                    reset_rate_limit_by_ip(ip, current_time, type);
+                    return true;
+                end
+                return false;
+            end
+        else
+            local current_time = math.floor(commonlib.TimeManager.GetCurrentTime() / 1000);
+            reset = current_time;
+            reset_rate_limit_by_ip(ip, current_time, type);
+        end
+    end
+    response:set_header("X-RateLimit-Limit", limit);
+    response:set_header("X-RateLimit-Remaining", remaining);
+    response:set_header("X-RateLimit-Reset", reset);
 end
 ?>

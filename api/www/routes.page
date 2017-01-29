@@ -5,6 +5,10 @@ include_once("./gists/routes.page");
 include_once("./users/routes.page");
 include_once("./users/followers/routes.page");
 include_once("./users/emails/routes.page");
+include_once("./rate_limit/routes.page");
+
+include_once("./tasks.page");
+include_once("./rate_limit/tasks.page");
 
 local apis = {
     check_root_apis,
@@ -16,9 +20,13 @@ local apis = {
     check_rate_limit_apis
 };
 
-for i = 1, #apis do
-    if (apis[i]()) then
-        break;
+if (check_rate_limit()) then
+    for i = 1, #apis do
+        if (apis[i]()) then
+            break;
+        end
     end
+else
+    process_failed_rate_limit();
 end
 ?>

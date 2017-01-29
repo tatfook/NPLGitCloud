@@ -77,4 +77,20 @@ end
 function process_success_response()
     response:status(204):send();
 end
+
+function process_failed_rate_limit()
+    local body;
+    if (is_authenticated()) then
+        body = {
+            message = "API rate limit exceeded for " .. get_auth_user() .. ".",
+            documentation_url = "https://developer.github.com/v3/#rate-limiting"
+        };
+    else
+        body = {
+            message = "API rate limit exceeded for " .. request:getpeername() .. ". (But here's the goog news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)",
+            documentation_url = "https://developer.github.com/v3/#rate-limiting"
+        };
+    end
+    response:status(403):send_json(body);
+end
 ?>
