@@ -20,7 +20,7 @@ local apis = {
     check_rate_limit_apis
 };
 
-if (check_rate_limit()) then
+if (check_rate_limit() and check_user_agent()) then
     for i = 1, #apis do
         if (apis[i]()) then
             break;

@@ -93,4 +93,14 @@ function process_failed_rate_limit()
     end
     response:status(403):send_json(body);
 end
+
+function check_user_agent()
+    if (not request:header("User-Agent")) then
+        local body = "Request forbidden by administrative rules.\nPlease make sure your request has a User-Agent header.\nCheck https://developer.github.com for other possible causes.\n";
+        response:status(403):send(body);
+        return false;
+    else
+        return true;
+    end
+end
 ?>
