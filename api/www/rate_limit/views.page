@@ -28,7 +28,29 @@ function get_rate_limit()
         };
         process_json_response(body);
     else
-        process_failed_login();
+        local ip = request:getpeername();
+        local core_info = get_rate_limit_by_ip("core", ip);
+        local search_info = get_rate_limit_by_ip("search", ip);
+        local body = {
+            resources = {
+                core = {
+                    limit = 60,
+                    remaining = core_info["remaining"],
+                    reset = core_info["reset"]
+                },
+                search = {
+                    limit = 10,
+                    remaining = search_info["remaining"],
+                    reset = search_info["reset"]
+                }
+            },
+            rate = {
+                limit = 60,
+                remaining = core_info["remaining"],
+                reset = core_info["reset"]
+            }
+        };
+        process_json_response(body);
     end
 end
 ?>

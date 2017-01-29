@@ -3,11 +3,38 @@ NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
 
+function get_rate_limit_by_type(api_type, user_type)
+    if (api_type == "core") then
+        if (user_type == "auth") then
+            return 5000;
+        else
+            return 60;
+        end
+    else
+        if (user_type == "auth") then
+            return 30;
+        else
+            return 10;
+        end
+    end
+end
+
 function get_rate_limit_by_username(type, username)
     local result;
-    db.RateLimit:findOne({ type = type, username = username }, function(err, row)
+    db.RateLimitUsername:findOne({ type = type, username = username }, function(err, row)
         result = {
-            remaining = row["remaining"],
+            remaining = get_rate_limit_by_type(type, "auth") - row["count"],
+            reset = row["reset"]
+        };
+    end);
+    return result;
+end
+
+function get_rate_limit_by_ip(type, ip)
+    local result;
+    db.RateLimitIp:findOne({ type = type, ip = ip }, function(err, row)
+        result = {
+            remaining = get_rate_limit_by_type(type, "ip") - row["count"],
             reset = row["reset"]
         };
     end);
