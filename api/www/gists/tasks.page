@@ -1,9 +1,30 @@
 <?npl
+include_once("../tasks.page");
 include_once("../users/tasks.page");
 
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
+function get_gist_files_db(file)
+    return {
+        size = get_file_size(file["filename"]),
+        raw_url = file["raw_url"],
+        type = "text/plain",
+        truncated = file["truncated"],
+        language = file["language"]
+    };
+end
+
+function get_gist_files_by_id(gist_id)
+    local results = {}
+    db.GistFiles:find({ gist = gist_id }, function(err, rows)
+        for i = 1, #rows do
+            results[rows[i]["filename"]] = get_gist_files_db(rows[i]);
+        end
+    end);
+    return results;
+end
 
 function get_gist_db(gist)
     return {
@@ -15,7 +36,7 @@ function get_gist_db(gist)
         public = gist["public"],
         owner = get_user_by_username(gist["id"]),
         user = gist["user"],
-        files = gist["files"],
+        files = get_gist_files_by_id(gist["id"]),
         truncated = gist["truncated"],
         comments = gist["comments"],
         comments_url = API_ADDR .. "/gists/" .. gist["id"] .. "/comments",
