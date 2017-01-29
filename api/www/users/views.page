@@ -13,6 +13,8 @@ function get_current_user()
         local username = get_auth_user();
         local record = get_user_private_by_username(username);
         process_json_response(record);
+    else
+        process_failed_login();
     end
 end
 
@@ -23,6 +25,8 @@ function update_current_user()
         update_user_by_username(username, body);
         local record = get_user_private_by_username(username);
         process_json_response(record);
+    else
+        process_failed_login();
     end
 end
 

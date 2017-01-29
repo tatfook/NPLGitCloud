@@ -13,6 +13,7 @@ local apis = {
     check_users_apis,
     check_followers_apis,
     check_emails_apis,
+    check_rate_limit_apis
 };
 
 for i = 1, #apis do

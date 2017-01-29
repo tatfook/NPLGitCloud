@@ -1,0 +1,34 @@
+<?npl
+include_once("../tasks.page");
+include_once("./task.page");
+
+function get_rate_limit()
+    if (is_authenticated()) then
+        local username = get_auth_user();
+        local core_info = get_rate_limit_by_username("core", username);
+        local search_info = get_rate_limit_by_username("search", username);
+        local body = {
+            resources = {
+                core = {
+                    limit = 5000,
+                    remaining = core_info["remaining"],
+                    reset = core_info["reset"]
+                },
+                search = {
+                    limit = 30,
+                    remaining = search_info["remaining"],
+                    reset = search_info["reset"]
+                }
+            },
+            rate = {
+                limit = 5000,
+                remaining = core_info["remaining"],
+                reset = core_info["reset"]
+            }
+        };
+        process_json_response(body);
+    else
+        process_failed_login();
+    end
+end
+?>

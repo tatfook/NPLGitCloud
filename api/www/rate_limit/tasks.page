@@ -1,0 +1,16 @@
+<?npl
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
+
+function get_rate_limit_by_username(type, username)
+    local result;
+    db.RateLimit:findOne({ type = type, username = username }, function(err, row)
+        result = {
+            remaining = row["remaining"],
+            reset = row["reset"]
+        };
+    end);
+    return result;
+end
+?>
