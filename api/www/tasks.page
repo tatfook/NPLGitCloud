@@ -57,11 +57,14 @@ function process_pagination(url, count)
     return links;
 end
 
-function process_json_response(body, headers)
+function process_json_response(body, headers, status_code)
     if (headers) then
         for k, v in ipairs(headers) do
             response:set_header(k, v);
         end
+    end
+    if (status) then
+        response:status(status_code);
     end
     response:send_json(body);
 end

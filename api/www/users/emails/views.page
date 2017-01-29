@@ -44,7 +44,7 @@ function add_user_emails()
         local headers = {
             ["Link"] = process_pagination(get_pure_url({}), count)
         };
-        process_json_response(results, headers);
+        process_json_response(results, headers, 201);
     else
         process_failed_login();
     end
