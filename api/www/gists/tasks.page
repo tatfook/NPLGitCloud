@@ -8,7 +8,7 @@ local db = TableDatabase:new():connect("nplgitcloud/db/", function() end);
 
 function get_gist_files_db(file)
     return {
-        size = get_file_size(file["filename"]),
+        size = get_file_size("gists/" .. file["filename"]),
         raw_url = file["raw_url"],
         type = "text/plain",
         truncated = file["truncated"],
