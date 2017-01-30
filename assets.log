@@ -1,6 +1,6 @@
-2017-01-29 22:36:54|-1195780352|Async Processing Thread AudioFile(4) Started
-2017-01-29 22:36:54|-1187387648|Async Processing Thread BigFile(3) Started
-2017-01-29 22:36:54|-1178994944|Async Processing Thread Web(2) Started
-2017-01-29 22:36:54|-1170602240|Async Processing Thread Asset(1) Started
-2017-01-29 22:36:54|-1162209536|Async Processing Thread Local(0) Started
-2017-01-29 22:36:54|-1153816832|CAsyncLoader IO Thread started
+2017-01-30 12:39:23|-993323264|Async Processing Thread Web(2) Started
+2017-01-30 12:39:23|-1001715968|Async Processing Thread BigFile(3) Started
+2017-01-30 12:39:23|-984930560|Async Processing Thread Asset(1) Started
+2017-01-30 12:39:23|-1010108672|Async Processing Thread AudioFile(4) Started
+2017-01-30 12:39:23|-976537856|Async Processing Thread Local(0) Started
+2017-01-30 12:39:23|-968145152|CAsyncLoader IO Thread started

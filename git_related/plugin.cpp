@@ -150,7 +150,7 @@ CORE_EXPORT_DECL void LibActivate(int nType, void* pVoid)
 
         NPLInterface::NPLObjectProxy input_msg = NPLInterface::NPLHelper::MsgStringToNPLTable(sMsg);
         const std::string& callback = input_msg["callback"];
-        const std::string& cmd = input_msg["cmd"];
+        const std::string& cmd = input_msg["git_cmd"];
 
         NPLInterface::NPLObjectProxy payload = input_msg["payload"];
 
@@ -263,6 +263,8 @@ CORE_EXPORT_DECL void LibActivate(int nType, void* pVoid)
 
         lua_close(L);
 
+        output_msg["cmd"] = "callback";
+        output_msg["original_cmd"] = "git_cmd";
         std::string output;
         NPLInterface::NPLHelper::NPLTableToString("msg", output_msg, output);
         pState->activate(callback.c_str(), output.c_str(), output.size());
