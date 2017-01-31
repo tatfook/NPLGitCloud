@@ -20,9 +20,11 @@ function start_client(_ip, _port, _nid)
 	-- while( NPL.activate(string.format("(%s):dgit/dgit.lua", _nid), {data="from client"}) ~=0 ) do end
 end
 
+
 -- key: nid, value: ip, port, avail, repos
 server_list = {};
 myNid = "";
+repo_dir = "";
 -- msg.cmd "init" | "update" | "info" | "callback" | "git" | "dgit" | "git_cmd"
 -- msg.server.ip 	only in init
 -- msg.server.port 	only in init
@@ -30,6 +32,7 @@ myNid = "";
 -- msg.nid 			in init (self nid) and callback (sender's nid)
 -- msg.ip 			only in init
 -- msg.port 		only in init
+-- msg.repo_dir		only in init
 -- msg.server_list  only in update 
 -- 					a list, key is nid, value is a table containing ip, port
 -- msg.ret 			only in callback
@@ -47,6 +50,7 @@ local function activate()
 		end
 
 		myNid = msg.nid;
+		repo_dir = msg.repo_dir;
 		server_list[msg.nid] = {ip = msg.ip, 
 										port = msg.port};	
 
@@ -61,6 +65,9 @@ local function activate()
 	elseif(msg.cmd == "update") then
 		for key,value in msg.server_list do
 			if(server_list[key]) then
+				if(server_list[key] ~= value) then
+					server_list[key] = value;
+				end
 			else
 				start_client(msg.server.ip, msg.server.port, msg.server.nid);
 
@@ -100,23 +107,33 @@ local function activate()
     	end
     	server_list[myNid].avail = largest;
 
+
     	local repos = {};
+    	f = io.popen(string.format("LC_ALL=C ls -d %s/*/*/", repo_dir));
 
+		for token in string.gmatch(f:read("*all"), "[^%s]+") do
+			local p_in = io.popen("git log -1 --pretty=format:\"%at\"");
+			local timestamp = tonumber(p_in:line());
+			p_in:close();
+   			repos[token] = timestamp;
+		end
+		f:close();
 
-    	NPL.activate(string.format("(%s):dgit/dgit.lua", msg.callback), 
-    		{cmd="callback",original_cmd="info",nid=myNid,ret=fs_info,repos=repos});
+		if(msg.callback) then
+    		NPL.activate(string.format(msg.callback), 
+    		{cmd="callback",original_cmd="info",nid=myNid,info={avail=largest,repos=repos});
+    	end
+
     elseif(msg.cmd == "callback") then
     	if(msg.original_cmd == "info") then
     		local largest = 0;
-    		for m,info in msg.ret do
-    			if(tonumber(info["avail"]) > largest) then
-    				largest = tonumber(info["avail"]);
-    			end
-    		end
-    		server_list[msg.nid].avail = largest;
+    		server_list[msg.nid] = msg.info;
+
     	elseif(msg.original_cmd == "git_cmd") then
+    		-- to do, update all nodes
     		-- to do, link up with api
     	end
+    	
     elseif(msg.cmd == "dgit") then
     	if(msg.git_cmd == "repoInit") then
 	    	local largest = {};
@@ -155,6 +172,7 @@ local function activate()
 	elseif(msg.cmd == "git") then
 		NPL.activate("git_related/GitcorePlugin.dll", 
 			{cmd="git_cmd",git_cmd=msg.git_cmd,callback=msg.callback,payload=msg.git_param});
+
 	-- else
 	-- 	if(msg.data) then
 	-- 		print(msg.data);
