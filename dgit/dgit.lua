@@ -53,6 +53,7 @@ local function activate()
 		repo_dir = msg.repo_dir;
 		server_list[msg.nid] = {ip = msg.ip, 
 										port = msg.port};	
+		NPL.activate("dgit/dgit.lua", {cmd="info"});
 
 		if(NPL.activate(string.format("(%s):dgit/dgit.lua", msg.server.nid), 
 						{cmd="info",callback=string.format("(%s):dgit/dgit.lua", myNid)}) ==0) then
@@ -73,9 +74,7 @@ local function activate()
 
 				if(NPL.activate(string.format("(%s):dgit/dgit.lua", key), 
 						{cmd="info",callback=string.format("(%s):dgit/dgit.lua", myNid)})==0) then
-					server_list[key] = {};
-					server_list[key].ip = value.ip;
-					server_list[key].port = value.port;
+					server_list[key] = value;
 					NPL.activate(string.format("(%s):dgit/dgit.lua", key), {cmd="update",server_list=server_list});
 				end
 			end
@@ -119,6 +118,8 @@ local function activate()
 		end
 		f:close();
 
+		server_list[myNid].repos = repos;
+
 		if(msg.callback) then
     		NPL.activate(string.format(msg.callback), 
     		{cmd="callback",original_cmd="info",nid=myNid,info={avail=largest,repos=repos});
@@ -133,7 +134,7 @@ local function activate()
     		-- to do, update all nodes
     		-- to do, link up with api
     	end
-    	
+
     elseif(msg.cmd == "dgit") then
     	if(msg.git_cmd == "repoInit") then
 	    	local largest = {};
