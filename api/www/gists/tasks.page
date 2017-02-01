@@ -34,7 +34,7 @@ function get_gist_db(gist)
         id = gist["id"],
         description = gist["description"],
         public = gist["public"],
-        owner = get_user_by_username(gist["id"]),
+        owner = get_user_by_username(gist["owner"]),
         user = gist["user"],
         files = get_gist_files_by_id(gist["id"]),
         truncated = gist["truncated"],
@@ -67,6 +67,22 @@ end
 function get_public_gists_count_by_username(username)
     local count;
     db.Gists:count({ owner = username, public = true }, function(err, rows) count = rows; end);
+    return count;
+end
+
+function get_user_gists_since(username, since, page, per_page)
+    local results = {};
+    db.Gists:find({ ["-owner+update_at"] = { username, gt = since, limit = per_page, skip = (page - 1) * per_page } }, function(err, rows)
+        for i = 1, #rows do
+            results[i] = get_gists_db(rows[i]);
+        end
+    end);
+    return results;
+end
+
+function get_user_gists_count_since(username, since)
+    local count;
+    db.Gists:count({ ["-owner+update_at"] = { username, gt = since } }, function(err, rows) count = rows; end);
     return count;
 end
 ?>

@@ -23,4 +23,46 @@ function get_public_gists()
     };
     process_json_response(results, headers);
 end
+
+function get_user_gists()
+    local since = request:get("since");
+    local username = request:url():match("^[^%?]*"):match("^/users/([^%s]+)/gists$");
+    local page = tonumber(request:get("page"));
+    local per_page = tonumber(request:get("per_page"));
+    if (not page) then
+        page = 1;
+    end
+    if (not per_page) then
+        per_page = 30;
+    end
+    local results = get_user_gists_since(username, since, page, per_page);
+    local count = get_user_gists_count_since(username, since);
+    local headers = {
+        ["Link"] = process_pagination(get_pure_url({ "since" }), count)
+    };
+    process_json_response(results, headers);
+end
+
+function get_auth_user_gists()
+    if (is_authenticated()) then
+        local since = request:get("since");
+        local username = get_auth_user();
+        local page = tonumber(request:get("page"));
+        local per_page = tonumber(request:get("per_page"));
+        if (not page) then
+            page = 1;
+        end
+        if (not per_page) then
+            per_page = 1;
+        end
+        local results = get_user_gists_since(username, since, page, per_page);
+        local count = get_user_gists_count_since(username, since);
+        local headers = {
+            ["Link"] = process_pagination(get_pure_url({ "since" }), count)
+        };
+        process_json_response(results, headers);
+    else
+        process_failed_login();
+    end
+end
 ?>

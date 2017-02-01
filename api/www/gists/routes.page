@@ -2,7 +2,9 @@
 include_once("./views.page");
 
 local apis = {
-    { "^/gists/public$", "GET", get_public_gists }
+    { "^/gists/public$", "GET", get_public_gists },
+    { "^/users/[^%s]+/gists$", "GET", get_user_gists },
+    { "^/gists$", "GET", get_auth_user_gists }
 };
 
 function check_gists_apis()
