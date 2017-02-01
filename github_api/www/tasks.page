@@ -6,4 +6,16 @@ function api_not_found()
     };
     response:status(404):send_json(body);
 end
+
+function no_content()
+    response:status(204);
+end
+
+function invalid_json_fields(message, errors)
+    local body = {
+        message = message,
+        errors = errors
+    };
+    response:status(422):send_json(body);
+end
 ?>

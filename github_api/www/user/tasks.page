@@ -1,0 +1,26 @@
+<?npl
+NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
+local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
+local db = TableDatabase:new():connect("db/", function() end);
+
+NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
+local Encoding = commonlib.gettable("System.Encoding");
+
+local function check_user_exist(username)
+    local count;
+    db.User:count({ username = username }, function(err, result) count = result; end);
+    return count == 1;
+end
+
+local function create_user_in_db(username, password)
+    db.User:insertOne( nil, { username = username, password = Encoding.sha1(password) }, function(err, data) end);
+end
+
+function create_user_by_username_password(username, password)
+    if (check_user_exist(username)) then
+        return false;
+    end
+    create_user_in_db(username, password);
+    return true;
+end
+?>

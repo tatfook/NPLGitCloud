@@ -1,0 +1,19 @@
+<?npl
+include_once("./tasks.page");
+include_once("../tasks.page");
+
+function create_user()
+    local body = json_decode(request:GetBody());
+    local username = body["username"], password = body["password"];
+    if (create_user_by_username_password(username, password)) then
+        no_content();
+    else
+        local errors = { {
+            resource = username,
+            field = "username",
+            code = "already_exists"
+        } };
+        invalid_json_fields("User Exists", errors);
+    end
+end
+?>

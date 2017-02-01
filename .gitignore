@@ -6,4 +6,5 @@ git_related/*.so
 github_api/assets.log
 github_api/log.txt
 github_api/log/
+github_api/db/
 *.swp
