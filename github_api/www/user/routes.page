@@ -2,7 +2,8 @@
 include_once("./views.page");
 
 local apis = {
-    { "^/user/create", "POST", create_user }
+    { "^/user/create$", "POST", create_user },
+    { "^/user/access_tokens$", "POST", get_access_tokens }
 };
 
 function user_apis()

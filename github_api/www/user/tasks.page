@@ -16,11 +16,31 @@ local function create_user_in_db(username, password)
     db.User:insertOne( nil, { username = username, password = Encoding.sha1(password) }, function(err, data) end);
 end
 
+local function auth_user(username, password)
+    local count;
+    db.User:count({ username = username, { "password", Encoding.sha1(password) } }, function(err, result) count = result; end);
+    return count == 1;
+end
+
+local function get_access_tokens_in_db(username)
+    local results;
+    db.AccessToken:find({ user = username }, function(err, rows) results = rows; end);
+    return results;
+end
+
 function create_user_by_username_password(username, password)
     if (check_user_exist(username)) then
         return false;
     end
     create_user_in_db(username, password);
     return true;
+end
+
+function get_access_tokens_by_username_password(username, password)
+    if (auth_user(username, password)) then
+        return get_access_tokens_in_db(username);
+    else
+        return false;
+    end
 end
 ?>

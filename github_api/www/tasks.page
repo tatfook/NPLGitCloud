@@ -18,4 +18,11 @@ function invalid_json_fields(message, errors)
     };
     response:status(422):send_json(body);
 end
+
+function login_failed()
+    local body = {
+        message = "Bad Credentials"
+    };
+    response:status(401):send_json(body);
+end
 ?>

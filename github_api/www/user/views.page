@@ -16,4 +16,18 @@ function create_user()
         invalid_json_fields("User Exists", errors);
     end
 end
+
+function get_access_tokens()
+    local body = json_decode(request:GetBody());
+    local username = body["username"], password = body["password"];
+    local tokens = get_access_tokens_by_username_password(username, password);
+    if (tokens) then
+        local body = {
+            "access_tokens": tokens
+        };
+        response:send_json(body);
+    else
+        login_failed();
+    end
+end
 ?>
