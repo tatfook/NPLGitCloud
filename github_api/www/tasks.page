@@ -1,0 +1,9 @@
+<?npl
+function api_not_found()
+    local body = {
+        message = "Not Found",
+        documentation_url = "https://developer.github.com/v3"
+    };
+    response:status(404):send_json(body);
+end
+?>

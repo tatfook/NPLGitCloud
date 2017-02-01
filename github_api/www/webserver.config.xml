@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebServer>
+    <servers>
+        <server host="*" port="8080" host_state_name="">
+            <defaultHost rules_id="api_rules"></defaultHost>
+            <virtualhosts>
+                <host name="www.sitename.com" rules_id="api_rules"></host>
+            </virtualhosts>
+        </server>
+    </servers>
+    <rules id="api_rules">
+        <rule match='{"^[^%./]*/$", "^[/%w_]+$"}' with="WebServer.redirecthandler" params='{"/index.page"}'></rule>
+        <rule match="%.lua$" with="WebServer.npl_script_handler" params='%CD%'></rule>
+        <rule match="%.page$" with="WebServer.npl_page_handler" params='%CD%'></rule>
+        <rule match="^/?wp%-" with="WebServer.filehandler" params='{baseDir = "script/apps/WebServer/admin/", }'></rule>
+        <rule match="." with="WebServer.filehandler" params='{baseDir = "%CD%", }'></rule>
+    </rules>
+</WebServer>

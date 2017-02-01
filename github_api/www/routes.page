@@ -1,0 +1,9 @@
+<?npl
+-- include_once("./user/routes.page");
+-- include_once("./repo/routes.page");
+include_once("./tasks.page");
+
+-- if (not user_apis() and not repo_apis()) then
+    api_not_found();
+-- end
+?>

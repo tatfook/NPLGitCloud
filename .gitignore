@@ -3,3 +3,7 @@ git_related/CMakeFiles/
 git_related/assets.log
 git_related/log.txt
 git_related/*.so
+github_api/assets.log
+github_api/log.txt
+github_api/log/
+*.swp
