@@ -36,7 +36,7 @@ local function get_access_tokens_in_db(username)
     return results;
 end
 
-local get_random_access_token()
+local function get_random_access_token()
     local result = "";
     for i = 1, access_token_length do
         local pos = math.random(1, alphabet:len());
@@ -45,13 +45,13 @@ local get_random_access_token()
     return result;
 end
 
-local check_random_access_token(access_token)
+local function check_random_access_token(access_token)
     local count;
     db.AccessToken:count({ access_token = access_token }, function(err, result) count = result; end);
     return count > 0;
 end
 
-local get_unique_access_token()
+local function get_unique_access_token()
     local token = get_random_access_token();
     while (check_access_token_exist(token)) do
         token = get_random_access_token();
