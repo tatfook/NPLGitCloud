@@ -23,7 +23,7 @@ function get_access_tokens()
     local tokens = get_access_tokens_by_username_password(username, password);
     if (tokens) then
         local body = {
-            "access_tokens": tokens
+            access_tokens = tokens
         };
         response:send_json(body);
     else
@@ -37,7 +37,7 @@ function create_access_token()
     local token = create_access_token_by_username_password(username, password);
     if (token) then
         local body = {
-            "access_token": token
+            access_token = token
         };
         response:send_json(body);
     else
