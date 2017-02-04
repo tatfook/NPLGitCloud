@@ -3,7 +3,8 @@ include_once("./views.page");
 
 local apis = {
     { "^/user/repos$", "GET", get_repos },
-    { "^/user/repos$", "POST", create_repo }
+    { "^/user/repos$", "POST", create_repo },
+    { "^/repos/[^/]+/[^/]+$", "DELETE", delete_repo }
 };
 
 function repo_apis()

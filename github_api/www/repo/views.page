@@ -13,7 +13,10 @@ local function get_body_optional(body, key, default)
 end
 
 function get_repos()
-    local token, type = request:get("access_token"), request:get("type");
+    local token, type = get_access_token_from_request(), request:get("type");
+    if (not token) then
+        login_failed();
+    end
     local user = get_user_by_access_token(token);
     if (not user or type ~= "owner") then
         login_failed();
@@ -24,7 +27,10 @@ function get_repos()
 end
 
 function create_repo()
-    lcoal token = request:get("access_token");
+    local token = get_access_token_from_request();
+    if (not token) then
+        login_failed();
+    end
     local user = get_user_by_access_token(token);
     if (not user) then
         login_failed();
@@ -44,5 +50,19 @@ function create_repo()
     create_repo_by_options(options);
     local repo = get_repo_by_reponame(options["name"]);
     response:status(201):send_json(repo);
+end
+
+function delete_repo()
+    local token = get_access_token_from_request();
+    if (not token) then
+        login_failed();
+    end
+    local user = get_user_by_access_token(token);
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+")) then
+        login_failed();
+    end
+    local owner, reponame = request:url():match("^/repos/([^/]+)/[^/]+"), request:url():match("^/repos/[^/]+/([^/]+)");
+    delete_repo_by_owner_reponame(owner, reponame);
+    request:status(204):send();
 end
 ?>

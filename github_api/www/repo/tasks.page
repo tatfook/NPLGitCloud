@@ -6,6 +6,8 @@ NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("db/", function() end);
 
+NPL.load("(gl)script/ide/Files.lua");
+
 local function get_size_by_repo(repo)
     local files = get_files_by_repo(repo);
     local size = 0;
@@ -77,5 +79,10 @@ function create_repo_by_options(options)
     if (options["auto_init"]) then
         write_file(fullname .. "/README.md", "");
     end
+end
+
+function delete_repo_by_reponame(owner, reponame)
+    db.Repo:deleteOne({ owner = owner, name = reponame }, function(err, count) end);
+    commonlib.Files.DeleteFolder(owner .. "/" .. reponame);
 end
 ?>

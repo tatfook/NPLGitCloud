@@ -12,7 +12,7 @@ function api_not_found()
 end
 
 function no_content()
-    response:status(204);
+    response:status(204):send();
 end
 
 function invalid_json_fields(message, errors)
@@ -28,6 +28,19 @@ function login_failed()
         message = "Bad Credentials"
     };
     response:status(401):send_json(body);
+end
+
+function get_access_token_from_request()
+    local token = request:get("access_token");
+    if (token) then
+        return token;
+    end
+    local auth = request:header("Authorization");
+    if (auth) then
+        local result = auth:gsub("%w+%s+", "");
+        return result;
+    end
+    return nil;
 end
 
 function get_file_size(filename)
