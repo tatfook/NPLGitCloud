@@ -47,9 +47,17 @@ function create_repo()
     options["has_wiki"] = get_body_optional(body, "has_wiki", true);
     options["has_downloads"] = get_body_optional(body, "has_downloads", true);
     options["auto_init"] = get_body_optional(body, "auto_init", false);
-    create_repo_by_options(options);
-    local repo = get_repo_by_reponame(options["name"]);
-    response:status(201):send_json(repo);
+    local repo = create_repo_by_options(options);
+    if (repo) then
+        response:status(201):send_json(repo);
+    else
+        local errors = { {
+            resource = user .. "/" .. body["name"],
+            field = "full_name",
+            code = "already_exists"
+        } };
+        invalid_json_fields("Repo Exists", errors);
+    end
 end
 
 function delete_repo()
@@ -62,7 +70,28 @@ function delete_repo()
         login_failed();
     end
     local owner, reponame = request:url():match("^/repos/([^/]+)/[^/]+"), request:url():match("^/repos/[^/]+/([^/]+)");
-    delete_repo_by_owner_reponame(owner, reponame);
-    request:status(204):send();
+    if (delete_repo_by_owner_reponame(owner, reponame)) then
+        request:status(204):send();
+    else
+        not_found();
+    end
+end
+
+function get_contents()
+    local token = get_access_token_from_request();
+    if (not token) then
+        login_failed();
+    end
+    local user = get_user_by_access_token(token);
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/.+")) then
+        login_failed();
+    end
+    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/.+"), request:url():match("^/repos/[^/]+/[^/]+/(.+)");
+    local contents = get_contents_by_repo_path(fullname, path);
+    if (contents) then
+        request:send_json(contents);
+    else
+        not_found();
+    end
 end
 ?>

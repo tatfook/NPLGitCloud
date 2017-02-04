@@ -16,6 +16,6 @@ for i = 1, #apis do
 end
 
 if (not api_found) then
-    api_not_found();
+    not_found();
 end
 ?>

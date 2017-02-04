@@ -3,7 +3,7 @@ NPL.load("(gl)script/ide/Files.lua");
 
 api_server_addr = "https://api.github.com";
 
-function api_not_found()
+function not_found()
     local body = {
         message = "Not Found",
         documentation_url = "https://developer.github.com/v3"
@@ -41,23 +41,5 @@ function get_access_token_from_request()
         return result;
     end
     return nil;
-end
-
-function get_file_size(filename)
-    local file = ParaIO.open(filename, "r");
-    if (file:IsValid()) then
-        return file:GetFileSize();
-        file:close();
-    else
-        return 0;
-    end
-end
-
-function write_file(filename, content)
-    local file = ParaIO.open(filename, "w");
-    if (file:IsValid()) then
-        file:WriteString(content);
-        file:close();
-    end
 end
 ?>
