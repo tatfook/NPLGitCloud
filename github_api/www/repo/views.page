@@ -3,6 +3,15 @@ include_once("./tasks.page");
 include_once("../tasks.page");
 include_once("../user/tasks.page");
 
+local function get_body_optional(body, key, default)
+    local result = body[key];
+    if (not result) then
+        return default;
+    else
+        return result;
+    end
+end
+
 function get_repos()
     local token, type = request:get("access_token"), request:get("type");
     local user = get_user_by_access_token(token);
@@ -12,5 +21,28 @@ function get_repos()
     end
     local repos = get_repos_by_user(user);
     response:send_json(repos);
+end
+
+function create_repo()
+    lcoal token = request:get("access_token");
+    local user = get_user_by_access_token(token);
+    if (not user) then
+        login_failed();
+        return;
+    end
+    local body = json_decode(request:GetBody());
+    local options = {};
+    options["owner"] = user;
+    options["name"] = body["name"];
+    options["description"] = get_body_optional(body, "description", "");
+    options["homepage"] = get_body_optional(body, "homepage", "");
+    options["private"] = get_body_optional(body, "private", false);
+    options["has_issues"] = get_body_optional(body, "has_issues", true);
+    options["has_wiki"] = get_body_optional(body, "has_wiki", true);
+    options["has_downloads"] = get_body_optional(body, "has_downloads", true);
+    options["auto_init"] = get_body_optional(body, "auto_init", false);
+    create_repo_by_options(options);
+    local repo = get_repo_by_reponame(options["name"]);
+    response:status(201):send_json(repo);
 end
 ?>

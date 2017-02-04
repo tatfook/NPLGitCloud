@@ -34,8 +34,17 @@ function get_file_size(filename)
     local file = ParaIO.open(filename, "r");
     if (file:IsValid()) then
         return file:GetFileSize();
+        file:close();
     else
         return 0;
+    end
+end
+
+function write_file(filename, content)
+    local file = ParaIO.open(filename, "w");
+    if (file:IsValid()) then
+        file:WriteString(content);
+        file:close();
     end
 end
 ?>

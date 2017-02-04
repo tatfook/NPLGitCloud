@@ -22,22 +22,23 @@ local function get_repo_from_db(record)
         owner = get_user_by_username(record["owner"]),
         name = record["name"],
         full_name = fullname,
-        description = "",
-        private = false,
+        description = record["description"],
+        private = record["private"],
         fork = true,
         url = api_server_addr .. "/repos/" .. fullname,
         contents_url = api_server_addr .. "/repos/" .. fullname .. "/contents/{+path}",
         trees_url = api_server_addr .. "/repos/" .. fullname .. "/git/trees{/sha}",
+        homepage = record["homepage"],
         language = nil,
         fork_count = 0,
         stargazers_count = 0,
         size = get_size_by_repo(fullname),
         default_branch = "master",
         open_issue_count = 0,
-        has_issues = true,
-        has_wiki = true,
-        has_pages = false,
-        has_downloads = true,
+        has_issues = record["has_issues"],
+        has_wiki = record["has_wiki"],
+        has_pages = record["has_pages"],
+        has_downloads = record["has_downloads"],
         pushed_at = record["pushed_at"],
         created_at = record["created_at"],
         updated_at = record["updated_at"],
@@ -58,5 +59,23 @@ function get_repos_by_user(user)
         end
     end);
     return repos;
+end
+
+function create_repo_by_options(options)
+    db.Repo:insertOne(nil, {
+        owner = options["owner"],
+        name = options["name"],
+        description = options["description"],
+        homepage = options["homepage"],
+        private = options["private"],
+        has_issues = options["has_issues"],
+        has_wiki = options["has_wiki"],
+        has_downloads = options["has_downloads"]
+    }, function(err, data) end);
+    local fullname = options["owner"] .. "/" .. options["name"];
+    ParaIO.CreateDirectory(fullname);
+    if (options["auto_init"]) then
+        write_file(fullname .. "/README.md", "");
+    end
 end
 ?>
