@@ -1,0 +1,16 @@
+<?npl
+include_once("./tasks.page");
+include_once("../tasks.page");
+include_once("../user/tasks.page");
+
+function get_repos()
+    local token, type = request:get("access_token"), request:get("type");
+    local user = get_user_by_access_token(token);
+    if (not user or type ~= "owner") then
+        login_failed();
+        return;
+    end
+    local repos = get_repos_by_user(user);
+    response:send_json(repos);
+end
+?>

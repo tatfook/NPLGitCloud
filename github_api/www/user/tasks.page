@@ -88,4 +88,25 @@ function create_access_token_by_username_password(username, password)
         return false;
     end
 end
+
+function get_user_by_access_token(access_token)
+    local result;
+    db.AccessToken:findOne({ access_token = access_token }, function(err, record) result = record["username"]; end);
+    return result;
+end
+
+local function get_user_from_db(record)
+    return {
+        login = record["username"],
+        id = record["_id"],
+        type = "User",
+        site_admin = false
+    };
+end
+
+function get_user_by_username(username)
+    local result;
+    db.User:findOne({ username = username}, function(err, record) result = get_user_from_db(record); end);
+    return result;
+end
 ?>

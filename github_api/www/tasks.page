@@ -1,4 +1,8 @@
 <?npl
+NPL.load("(gl)script/ide/Files.lua");
+
+api_server_addr = "https://api.github.com";
+
 function api_not_found()
     local body = {
         message = "Not Found",
@@ -24,5 +28,14 @@ function login_failed()
         message = "Bad Credentials"
     };
     response:status(401):send_json(body);
+end
+
+function get_file_size(filename)
+    local file = ParaIO.open(filename, "r");
+    if (file:IsValid()) then
+        return file:GetFileSize();
+    else
+        return 0;
+    end
 end
 ?>

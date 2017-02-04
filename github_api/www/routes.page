@@ -1,5 +1,6 @@
 <?npl
 include_once("./user/routes.page");
+include_once("./repo/routes.page");
 include_once("./tasks.page");
 
 local apis = {
