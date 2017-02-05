@@ -13,11 +13,7 @@ local function get_body_optional(body, key, default)
 end
 
 function get_repos()
-    local token, type = get_access_token_from_request(), request:get("type");
-    if (not token) then
-        login_failed();
-    end
-    local user = get_user_by_access_token(token);
+    local user, type = auth_access_token(), request:get("type");
     if (not user or type ~= "owner") then
         login_failed();
         return;
@@ -27,11 +23,7 @@ function get_repos()
 end
 
 function create_repo()
-    local token = get_access_token_from_request();
-    if (not token) then
-        login_failed();
-    end
-    local user = get_user_by_access_token(token);
+    local user = auth_access_token();
     if (not user) then
         login_failed();
         return;
@@ -62,15 +54,13 @@ function create_repo()
 end
 
 function delete_repo()
-    local token = get_access_token_from_request();
-    if (not token) then
+    local user = auth_access_token();
+    local owner = request:url():match("^/repos/([^/]+)/[^/]+");
+    if (not user or user ~= owner) then
         login_failed();
+        return;
     end
-    local user = get_user_by_access_token(token);
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+")) then
-        login_failed();
-    end
-    local owner, reponame = request:url():match("^/repos/([^/]+)/[^/]+"), request:url():match("^/repos/[^/]+/([^/]+)");
+    local reponame = request:url():match("^/repos/[^/]+/([^/]+)");
     if (delete_repo_by_owner_reponame(owner, reponame)) then
         request:status(204):send();
     else
@@ -79,13 +69,10 @@ function delete_repo()
 end
 
 function get_contents()
-    local token = get_access_token_from_request();
-    if (not token) then
-        login_failed();
-    end
-    local user = get_user_by_access_token(token);
+    local user = auth_access_token();
     if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
         login_failed();
+        return;
     end
     local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+([%(/.*)]?)");
     local contents = get_contents_by_repo_path(fullname, path);
@@ -97,17 +84,22 @@ function get_contents()
 end
 
 function delete_file()
-    local token = get_access_token_from_request();
-    if (not token) then
-        login_failed();
-    end
-    local user = get_user_by_access_token(token);
+    local user = auth_access_token();
     if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
         login_failed();
+        return;
     end
     local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+([%(/.*)]?)");
     local body = json_decode(request:GetBody());
     local sha = get_body_optional(body, "sha", nil);
+    if (not sha) then
+        local errors = { {
+            field = "sha",
+            code = "missing_field"
+        } };
+        invalid_json_fields("Fields Missing", errors);
+        return;
+    end
     local options = {
         repo = fullname,
         path = path,
@@ -118,5 +110,56 @@ function delete_file()
     else
         not_found();
     end
+end
+
+function update_file()
+    local user = auth_access_token();
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
+        login_failed();
+        return;
+    end
+    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+([%(/.*)]?)");
+    local body = json_decode(request:GetBody());
+    local path = get_body_optional(body, "path", nil);
+    local content = get_body_optional(body, "content", nil);
+    if (not path or not content) then
+        local errors = {};
+        if (not path) then
+            table.insert(errors, {
+                field = "path",
+                code = "missing_field"
+            });
+        end
+        if (not content) then
+            table.insert(errors, {
+                field = "content",
+                code = "missing_field"
+            });
+        end
+        invalid_json_fields("Fields Missing", errors);
+        return;
+    end
+    if (check_file_exist(repo, path)) then
+        local sha = get_body_optional(body, "sha", nil);
+        if (not sha) then
+            local errors = { {
+                field = "sha",
+                code = "missing_field"
+            } };
+            invalid_json_fields("Fields Missing", errors);
+            return;
+        end
+        if (not check_sha_by_file(repo, path, sha)) then
+            local errors = { {
+                resource = sha,
+                field = "sha",
+                code = "invalid"
+            } };
+            invalid_json_fields("SHA Conflict", errors);
+            return;
+        end
+    end
+    local result = update_file_by_content(repo, path, content);
+    response:send_json(result);
 end
 ?>

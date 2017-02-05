@@ -3,6 +3,19 @@ NPL.load("(gl)script/ide/Files.lua");
 
 api_server_addr = "https://api.github.com";
 
+local function get_access_token_from_request()
+    local token = request:get("access_token");
+    if (token) then
+        return token;
+    end
+    local auth = request:header("Authorization");
+    if (auth) then
+        local result = auth:gsub("%w+%s+", "");
+        return result;
+    end
+    return nil;
+end
+
 function not_found()
     local body = {
         message = "Not Found",
@@ -30,16 +43,15 @@ function login_failed()
     response:status(401):send_json(body);
 end
 
-function get_access_token_from_request()
-    local token = request:get("access_token");
-    if (token) then
-        return token;
+function auth_access_token()
+    local token = get_access_token_from_request();
+    if (not token) then
+        return false;
     end
-    local auth = request:header("Authorization");
-    if (auth) then
-        local result = auth:gsub("%w+%s+", "");
-        return result;
+    local user = get_user_by_access_token(token);
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
+        return false;
     end
-    return nil;
+    return true;
 end
 ?>
