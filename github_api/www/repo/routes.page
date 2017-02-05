@@ -5,7 +5,8 @@ local apis = {
     { "^/user/repos$", "GET", get_repos },
     { "^/user/repos$", "POST", create_repo },
     { "^/repos/[^/]+/[^/]+$", "DELETE", delete_repo },
-    { "^/repos/[^/]+/[^/]+/contents/.+$", "GET", get_contents }
+    { "^/repos/[^/]+/[^/]+/contents[%(/.*)]?$", "GET", get_contents },
+    { "^/repos/[^/]+/[^/]+/contents[%(/.*)]?$", "DELETE", delete_file }
 };
 
 function repo_apis()

@@ -80,6 +80,13 @@ local function check_path_exist(repo, path)
     return result;
 end
 
+local function check_file_exist(repo, path)
+    local dir, name = get_dir_by_path(path), get_name_by_path(path);
+    local result;
+    db.Repo:count({ repo = repo, dir = dir, name = name, type = "file" }, function(err, record) result = record; end);
+    return result == 1;
+end
+
 local function get_file_from_db(record)
     local path = record["dir"] .. "/" .. record["name"];
     local url = api_server_addr .. "/repos/" .. record["repo"] .. "/contents/" .. path;
@@ -122,6 +129,17 @@ local function get_items_by_dir(repo, dir)
         table.insert(results, get_dir_item_from_db(record));
     end
     return results;
+end
+
+local function process_path(path)
+    local result = path;
+    if (not result or result == "" or result == "/") then
+        result = ".";
+    else
+        result = "./" .. result;
+    end
+    result = result:gsub("/$", ""); 
+    return result;
 end
 
 function get_repos_by_user(user)
@@ -169,12 +187,7 @@ function delete_repo_by_reponame(owner, reponame)
 end
 
 function get_contents_by_repo_path(repo, path)
-    if (not path) then
-        path = ".";
-    else
-        path = "./" .. path;
-    end
-    path = path:gsub("/$", "");
+    path = process_path(path);
     local abs_path = repo .. "/" .. path;
     local type = check_path_exist(repo, path);
     if (not type) then
@@ -186,5 +199,15 @@ function get_contents_by_repo_path(repo, path)
     else
         return get_items_by_dir(repo, path);
     end
+end
+
+function delete_file_by_options(options)
+    local repo, path = options["repo"], process_path(options["path"]);
+    if (not check_file_exist(repo, path)) then
+        return false;
+    end
+    local dir, name = get_dir_by_path(path), get_name_by_path(path);
+    db.Dir:deleteOne({ repo = repo, dir = dir, name = name }, function(err, count) end);
+    return true;
 end
 ?>
