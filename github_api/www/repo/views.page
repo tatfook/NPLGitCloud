@@ -70,11 +70,11 @@ end
 
 function get_contents()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
         login_failed();
         return;
     end
-    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+([%(/.*)]?)");
+    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local contents = get_contents_by_repo_path(fullname, path);
     if (contents) then
         request:send_json(contents);
@@ -85,11 +85,11 @@ end
 
 function delete_file()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
         login_failed();
         return;
     end
-    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+([%(/.*)]?)");
+    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local body = json_decode(request:GetBody());
     local sha = get_body_optional(body, "sha", nil);
     if (not sha) then
@@ -114,11 +114,11 @@ end
 
 function update_file()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
         login_failed();
         return;
     end
-    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+([%(/.*)]?)");
+    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local body = json_decode(request:GetBody());
     local path = get_body_optional(body, "path", nil);
     local content = get_body_optional(body, "content", nil);
@@ -161,5 +161,16 @@ function update_file()
     end
     local result = update_file_by_content(repo, path, content);
     response:send_json(result);
+end
+
+function get_trees()
+    local user = auth_access_token();
+    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/git/trees/master")) then
+        login_failed();
+        return;
+    end
+    local repo = request:url():match("^/repos/([^/]+/[^/]+)/git/trees/master");
+    local result = get_trees_by_repo(repo);
+    return result;
 end
 ?>

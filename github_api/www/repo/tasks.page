@@ -290,4 +290,36 @@ function update_file_by_content(repo, path, content)
     };
     return result;
 end
+
+function get_trees_by_repo(repo)
+    local result = {};
+    db.Dir:find({ repo = repo }, function(err, records)
+        for i = 1, #records do
+            local path = records[i]["dir"] .. "/" .. records[i]["name"];
+            path = path:gsub("^%./", "");
+            local mode, type;
+            if (records[i]["type"] == "file") then
+                table.insert(result, {
+                    path = path,
+                    mode = "100644",
+                    type = "blob",
+                    sha = records[i]["sha"],
+                    size = records[i]["size"]
+                });
+            else
+                table.insert(result, {
+                    path = path,
+                    mode = "040000",
+                    type = "tree",
+                    sha = records[i]["sha"],
+                });
+            end;
+        end
+    end);
+    local returned_value = {
+        tree = result,
+        truncated = false
+    };
+    return returned_value;
+end
 ?>
