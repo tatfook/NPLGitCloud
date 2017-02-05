@@ -281,7 +281,9 @@ end
 function update_file_by_content(repo, path, content)
     path = process_path(path);
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    db.Dir:updateOne({ repo = repo, dir = dir, name = name }, { content = Encoding.base64(content), size = content:len(), sha = get_sha_by_file(content, size) }, function(err, data) end);
+    local decoded_content = Encoding.unbase64(content);
+    local size = decoded_content:len();
+    db.Dir:updateOne({ repo = repo, dir = dir, name = name }, { content = content, size = size, sha = get_sha_by_file(decoded_content, size) }, function(err, data) end);
     add_dirs_by_path(repo, path);
     local result = {
         content = get_file_by_repo_path(repo, dir, name);
