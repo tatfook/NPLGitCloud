@@ -138,7 +138,7 @@ local function get_items_by_dir(repo, dir)
     local results = {};
     db.Dir:findOne({ repo = repo, dir = dir }, function(err, record)
         table.insert(results, get_dir_item_from_db(record));
-    end
+    end);
     return results;
 end
 
