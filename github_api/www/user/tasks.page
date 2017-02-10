@@ -13,11 +13,12 @@ local alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 local function check_user_exist(username)
     local count;
     db.User:count({ username = username }, function(err, result) count = result; end);
+    echo("count: " .. count);
     return count == 1;
 end
 
 local function create_user_in_db(username, password)
-    db.User:insertOne( nil, { username = username, password = Encoding.sha1(password) }, function(err, data) end);
+    db.User:insertOne( nil, { username = username, password = Encoding.sha1(password) }, function(err, data) echo(data.username .. " " .. data.password); end);
 end
 
 local function auth_user(username, password)
