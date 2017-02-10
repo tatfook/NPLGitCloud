@@ -14,7 +14,7 @@ local function check_user_exist(username)
     local count;
     db.User:count({ username = username }, function(err, result) count = result; end);
     echo("count: " .. tostring(count));
-    return count == 1;
+    return count > 0;
 end
 
 local function create_user_in_db(username, password)
@@ -24,7 +24,7 @@ end
 local function auth_user(username, password)
     local count;
     db.User:count({ username = username, { "password", Encoding.sha1(password) } }, function(err, result) count = result; end);
-    return count == 1;
+    return count > 0;
 end
 
 local function get_access_tokens_in_db(username)
