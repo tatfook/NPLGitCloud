@@ -13,7 +13,7 @@ local alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 local function check_user_exist(username)
     local count;
     db.User:count({ username = username }, function(err, result) count = result; end);
-    echo("count: " .. count);
+    echo("count: " .. tostring(count));
     return count == 1;
 end
 
