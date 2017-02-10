@@ -9,6 +9,7 @@ local Encoding = commonlib.gettable("System.Encoding");
 
 math.randomseed(os.time());
 
+local access_token_length = 40;
 local alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 local function check_user_exist(username)
