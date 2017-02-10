@@ -62,7 +62,7 @@ end
 local function create_access_token_in_db(username)
     local token = get_unique_access_token();
     log("create token: " .. token);
-    db.AccessToken.insertOne(nil, { user = username, access_token = token }, function(err, data) end);
+    db.AccessToken.insertOne(nil, { user = username, access_token = token }, function(err, data) log("create token: " .. username .. " " .. token); end);
     return token;
 end
 
