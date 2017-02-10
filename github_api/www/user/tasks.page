@@ -2,6 +2,7 @@
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("db/", function() end);
+db:EnableSyncMode(true);
 
 NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
 local Encoding = commonlib.gettable("System.Encoding");
@@ -11,8 +12,7 @@ math.randomseed(os.time());
 local alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 local function check_user_exist(username)
-    local count;
-    db.User:count({ username = username }, function(err, result) count = result; end);
+    local err, count = db.User:count({ username = username });
     echo("count: " .. tostring(count));
     return count > 0;
 end
@@ -22,18 +22,16 @@ local function create_user_in_db(username, password)
 end
 
 local function auth_user(username, password)
-    local count;
-    db.User:count({ username = username, { "password", Encoding.sha1(password) } }, function(err, result) count = result; end);
+    local err, count = db.User:count({ username = username, { "password", Encoding.sha1(password) } });
     return count > 0;
 end
 
 local function get_access_tokens_in_db(username)
     local results = {};
-    db.AccessToken:find({ user = username }, function(err, rows)
-        for i = 1, #rows do
-            table.insert(results, rows["access_token"]);
-        end
-    end);
+    local err, rows = db.AccessToken:find({ user = username });
+    for i = 1, #rows do
+        table.insert(results, rows["access_token"]);
+    end
     return results;
 end
 
@@ -47,8 +45,7 @@ local function get_random_access_token()
 end
 
 local function check_random_access_token(access_token)
-    local count;
-    db.AccessToken:count({ access_token = access_token }, function(err, result) count = result; end);
+    local err, count = db.AccessToken:count({ access_token = access_token });
     return count > 0;
 end
 
@@ -91,8 +88,8 @@ function create_access_token_by_username_password(username, password)
 end
 
 function get_user_by_access_token(access_token)
-    local result;
-    db.AccessToken:findOne({ access_token = access_token }, function(err, record) result = record["username"]; end);
+    local err, record = db.AccessToken:findOne({ access_token = access_token });
+    local result = record["username"];
     return result;
 end
 
@@ -106,8 +103,8 @@ local function get_user_from_db(record)
 end
 
 function get_user_by_username(username)
-    local result;
-    db.User:findOne({ username = username}, function(err, record) result = get_user_from_db(record); end);
+    local err, record = db.User:findOne({ username = username});
+    local result = get_user_from_db(record);
     return result;
 end
 ?>

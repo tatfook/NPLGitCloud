@@ -5,6 +5,7 @@ include_once("../tasks.page");
 NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
 local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
 local db = TableDatabase:new():connect("db/", function() end);
+db:EnableSyncMode(true);
 
 NPL.load("(gl)script/ide/Encoding.lua");
 NPL.load("(gl)script/ide/Encoding/sha1.lua");
@@ -12,11 +13,10 @@ local Encoding = commonlib.gettable("commonlib.Encoding");
 
 local function get_size_by_repo(repo)
     local size = 0;
-    db.Dir:find({ repo = repo, type = "file" }, function(err, records)
-        for i = 1, #records do
-            size = size + records[i]["size"];
-        end
-    end);
+    local err, records = db.Dir:find({ repo = repo, type = "file" });
+    for i = 1, #records do
+        size = size + records[i]["size"];
+    end
     return size;
 end
 
@@ -57,9 +57,8 @@ local function get_repo_from_db(record)
 end
 
 local function check_repo_exist(owner, reponame)
-    local count;
-    db.Repo:count({ owner = owner, name = reponame }, function(err, result) count = result; end);
-    return count == 1;
+    local err, count = db.Repo:count({ owner = owner, name = reponame });
+    return count > 0;
 end
 
 local function get_dir_by_path(path)
@@ -76,26 +75,23 @@ local function check_path_exist(repo, path)
     end
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     local result;
-    db.Dir:findOne({ repo = repo, dir = dir, name = name }, function(err, record)
-        if (record) then
-            result = record["type"];
-        end
-    end);
+    local err, record = db.Dir:findOne({ repo = repo, dir = dir, name = name });
+    if (record) then
+        result = record["type"];
+    end
     return result;
 end
 
 function check_file_exist(repo, path)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    local result;
-    db.Dir:count({ repo = repo, dir = dir, name = name, type = "file" }, function(err, record) result = record; end);
-    return result == 1;
+    local err, result = db.Dir:count({ repo = repo, dir = dir, name = name, type = "file" });
+    return result > 0;
 end
 
 function check_sha_by_file(repo, path, sha)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    local result;
-    db.Dir:count({ repo = repo, dir = dir, name = name, type = "file", sha = sha }, function(err, record) result = record; end);
-    return result == 1;
+    local err, result = db.Dir:count({ repo = repo, dir = dir, name = name, type = "file", sha = sha });
+    return result > 0;
 end
 
 local function get_file_from_db(record)
@@ -136,9 +132,14 @@ end
 
 local function get_items_by_dir(repo, dir)
     local results = {};
-    db.Dir:findOne({ repo = repo, dir = dir }, function(err, record)
-        table.insert(results, get_dir_item_from_db(record));
-    end);
+    local err, records = db.Dir:find({ repo = repo, dir = dir });
+    for i = 1, #records do
+        if (records[i]["type"] == "file") then
+            table.insert(results, get_file_from_db(records[i]));
+        else
+            table.insert(results, get_dir_item_from_db(records[i]));
+        end
+    end
     return results;
 end
 
@@ -210,12 +211,11 @@ local function add_dirs_by_path(repo, path)
 end
 
 function get_repos_by_user(user)
-    local repos;
-    db.Repo:find({ owner = user }, function(err, records)
-        for i = 1, #records do
-            table.insert(repos, get_repo_from_db(records[i]));
-        end
-    end);
+    local repos = {};
+    local err, records = db.Repo:find({ owner = user });
+    for i = 1, #records do
+        table.insert(repos, get_repo_from_db(records[i]));
+    end
     return repos;
 end
 
@@ -293,29 +293,28 @@ end
 
 function get_trees_by_repo(repo)
     local result = {};
-    db.Dir:find({ repo = repo }, function(err, records)
-        for i = 1, #records do
-            local path = records[i]["dir"] .. "/" .. records[i]["name"];
-            path = path:gsub("^%./", "");
-            local mode, type;
-            if (records[i]["type"] == "file") then
-                table.insert(result, {
-                    path = path,
-                    mode = "100644",
-                    type = "blob",
-                    sha = records[i]["sha"],
-                    size = records[i]["size"]
-                });
-            else
-                table.insert(result, {
-                    path = path,
-                    mode = "040000",
-                    type = "tree",
-                    sha = records[i]["sha"],
-                });
-            end;
-        end
-    end);
+    local err, records = db.Dir:find({ repo = repo });
+    for i = 1, #records do
+        local path = records[i]["dir"] .. "/" .. records[i]["name"];
+        path = path:gsub("^%./", "");
+        local mode, type;
+        if (records[i]["type"] == "file") then
+            table.insert(result, {
+                path = path,
+                mode = "100644",
+                type = "blob",
+                sha = records[i]["sha"],
+                size = records[i]["size"]
+            });
+        else
+            table.insert(result, {
+                path = path,
+                mode = "040000",
+                type = "tree",
+                sha = records[i]["sha"],
+            });
+        end;
+    end
     local returned_value = {
         tree = result,
         truncated = false
