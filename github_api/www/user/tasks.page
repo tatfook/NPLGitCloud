@@ -24,6 +24,7 @@ end
 
 local function auth_user(username, password)
     local err, count = db.User:count({ username = username, { "password", Encoding.sha1(password) } });
+    echo(tostring(count));
     return count > 0;
 end
 
@@ -45,7 +46,7 @@ local function get_random_access_token()
     return result;
 end
 
-local function check_random_access_token(access_token)
+local function check_access_token_exist(access_token)
     local err, count = db.AccessToken:count({ access_token = access_token });
     return count > 0;
 end
