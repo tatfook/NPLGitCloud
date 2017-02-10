@@ -3,7 +3,7 @@ include_once("./tasks.page");
 include_once("../tasks.page");
 
 function create_user()
-    local body = json_decode(request:GetBody());
+    local body = request:GetBody();
     local username, password = body["username"], body["password"];
     local result = create_user_by_username_password(username, password);
     if (result) then
@@ -19,7 +19,7 @@ function create_user()
 end
 
 function get_access_tokens()
-    local body = json_decode(request:GetBody());
+    local body = request:GetBody();
     local username, password = body["username"], body["password"];
     local tokens = get_access_tokens_by_username_password(username, password);
     if (tokens) then
@@ -33,7 +33,7 @@ function get_access_tokens()
 end
 
 function create_access_token()
-    local body = json_decode(request:GetBody());
+    local body = request:GetBody();
     local username, password = body["username"], body["password"];
     local token = create_access_token_by_username_password(username, password);
     if (token) then
