@@ -23,7 +23,7 @@ local function create_user_in_db(username, password)
 end
 
 local function auth_user(username, password)
-    local err, count = db.User:count({ username = username, password = Encoding.sha1(password) });
+    local err, count = db.User:count({ username = username, { "password", Encoding.sha1(password) } });
     echo(tostring(count));
     return count > 0;
 end
