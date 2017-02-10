@@ -68,10 +68,10 @@ end
 
 function create_user_by_username_password(username, password)
     if (check_user_exist(username)) then
-        return false;
+        return nil;
     end
     create_user_in_db(username, password);
-    return true;
+    return { username = username };
 end
 
 function get_access_tokens_by_username_password(username, password)

@@ -5,8 +5,9 @@ include_once("../tasks.page");
 function create_user()
     local body = json_decode(request:GetBody());
     local username, password = body["username"], body["password"];
-    if (create_user_by_username_password(username, password)) then
-        no_content();
+    local result = create_user_by_username_password(username, password);
+    if (result) then
+        response:send_json(result);
     else
         local errors = { {
             resource = username,
