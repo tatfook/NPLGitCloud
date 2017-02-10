@@ -13,7 +13,7 @@ local Encoding = commonlib.gettable("commonlib.Encoding");
 
 local function get_size_by_repo(repo)
     local size = 0;
-    local err, records = db.Dir:find({ repo = repo, type = "file" });
+    local err, records = db.Dir:find({ ["+repo+type"] = { repo, "file" } });
     for i = 1, #records do
         size = size + records[i]["size"];
     end
@@ -57,7 +57,7 @@ local function get_repo_from_db(record)
 end
 
 local function check_repo_exist(owner, reponame)
-    local err, count = db.Repo:count({ owner = owner, name = reponame });
+    local err, count = db.Repo:count({ ["+owner+name"] = { owner, reponame } });
     return count > 0;
 end
 
@@ -75,7 +75,7 @@ local function check_path_exist(repo, path)
     end
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     local result;
-    local err, record = db.Dir:findOne({ repo = repo, dir = dir, name = name });
+    local err, record = db.Dir:findOne({ ["+repo+dir+name"] = { repo, dir, name } });
     if (record) then
         result = record["type"];
     end
@@ -84,13 +84,13 @@ end
 
 function check_file_exist(repo, path)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    local err, result = db.Dir:count({ repo = repo, dir = dir, name = name, type = "file" });
+    local err, result = db.Dir:count({ ["+repo+dir+name+type"] = { repo, dir, name, "file" } });
     return result > 0;
 end
 
 function check_sha_by_file(repo, path, sha)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    local err, result = db.Dir:count({ repo = repo, dir = dir, name = name, type = "file", sha = sha });
+    local err, result = db.Dir:count({ ["+repo+dir+name+type+sha"] = { repo, dir, name, "file", sha } });
     return result > 0;
 end
 
@@ -132,7 +132,7 @@ end
 
 local function get_items_by_dir(repo, dir)
     local results = {};
-    local err, records = db.Dir:find({ repo = repo, dir = dir });
+    local err, records = db.Dir:find({ ["+repo+dir"] = { repo, dir } });
     for i = 1, #records do
         if (records[i]["type"] == "file") then
             table.insert(results, get_file_from_db(records[i]));
