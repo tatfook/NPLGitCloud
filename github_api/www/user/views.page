@@ -38,6 +38,7 @@ function create_access_token()
     local token = create_access_token_by_username_password(username, password);
     if (token) then
         local body = {
+            username = username,
             access_token = token
         };
         response:send_json(body);
