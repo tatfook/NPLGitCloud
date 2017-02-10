@@ -31,6 +31,7 @@ end
 local function get_access_tokens_in_db(username)
     local results = {};
     local err, rows = db.AccessToken:find({ user = username });
+    log("found access tokens: " .. #rows);
     for i = 1, #rows do
         table.insert(results, rows["access_token"]);
     end

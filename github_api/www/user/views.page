@@ -24,6 +24,7 @@ function get_access_tokens()
     local tokens = get_access_tokens_by_username_password(username, password);
     if (tokens) then
         local body = {
+            username = username,
             access_tokens = tokens
         };
         response:send_json(body);
