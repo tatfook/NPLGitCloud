@@ -16,7 +16,7 @@ local function get_size_by_repo(repo)
         for i = 1, #records do
             size = size + records[i]["size"];
         end
-    end
+    end);
     return size;
 end
 
