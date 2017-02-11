@@ -47,7 +47,7 @@ end
 
 function auth_access_token()
     local token = get_access_token_from_request();
-    log("access token: " .. token);
+    log("access token: " .. tostring(token));
     if (not token) then
         return false;
     end
