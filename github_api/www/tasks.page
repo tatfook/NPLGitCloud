@@ -52,10 +52,11 @@ function auth_access_token()
         return false;
     end
     local user = get_user_by_access_token(token);
+    log("match user: " .. tostring(user));
     if (not user or request:url():match("^/repos") and user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
         return false;
     end
-    log("match user: " .. user);
+    log("authenticated user: " .. user);
     return user;
 end
 ?>
