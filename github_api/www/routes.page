@@ -4,7 +4,8 @@ include_once("./repo/routes.page");
 include_once("./tasks.page");
 
 local apis = {
-    user_apis
+    user_apis,
+    repo_apis
 };
 
 local api_found = false;
