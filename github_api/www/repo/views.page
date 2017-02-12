@@ -55,12 +55,12 @@ end
 
 function delete_repo()
     local user = auth_access_token();
-    local owner = request:url():match("^/repos/([^/]+)/[^/]+");
+    local owner = get_url_without_params():match("^/repos/([^/]+)/[^/]+");
     if (not user or user ~= owner) then
         login_failed();
         return;
     end
-    local reponame = request:url():match("^/repos/[^/]+/([^/]+)");
+    local reponame = get_url_without_params():match("^/repos/[^/]+/([^/]+)");
     if (delete_repo_by_owner_reponame(owner, reponame)) then
         request:status(204):send();
     else
@@ -70,11 +70,11 @@ end
 
 function get_contents()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
+    if (not user or user ~= get_url_without_params():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
         login_failed();
         return;
     end
-    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
+    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local contents = get_contents_by_repo_path(fullname, path);
     if (contents) then
         request:send_json(contents);
@@ -85,11 +85,11 @@ end
 
 function delete_file()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
+    if (not user or user ~= get_url_without_params():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
         login_failed();
         return;
     end
-    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
+    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local body = request:GetBody();
     local sha = get_body_optional(body, "sha", nil);
     if (not sha) then
@@ -114,11 +114,11 @@ end
 
 function update_file()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
+    if (not user or user ~= get_url_without_params():match("^/repos/([^/]+)/[^/]+/contents[%(/.*)]?")) then
         login_failed();
         return;
     end
-    local fullname, path = request:url():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), request:url():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
+    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local body = request:GetBody();
     local path = get_body_optional(body, "path", nil);
     local content = get_body_optional(body, "content", nil);
@@ -165,11 +165,11 @@ end
 
 function get_trees()
     local user = auth_access_token();
-    if (not user or user ~= request:url():match("^/repos/([^/]+)/[^/]+/git/trees/master")) then
+    if (not user or user ~= get_url_without_params():match("^/repos/([^/]+)/[^/]+/git/trees/master")) then
         login_failed();
         return;
     end
-    local repo = request:url():match("^/repos/([^/]+/[^/]+)/git/trees/master");
+    local repo = get_url_without_params():match("^/repos/([^/]+/[^/]+)/git/trees/master");
     local result = get_trees_by_repo(repo);
     return result;
 end

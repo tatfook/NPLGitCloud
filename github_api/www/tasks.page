@@ -45,6 +45,10 @@ function login_failed()
     response:status(401):send_json(body);
 end
 
+function get_url_without_params()
+    return request:url():match("^[^%?]*");
+end
+
 function auth_access_token()
     local token = get_access_token_from_request();
     log("access token: " .. tostring(token));
@@ -53,7 +57,7 @@ function auth_access_token()
     end
     local user = get_user_by_access_token(token);
     log("match user: " .. tostring(user));
-    if (not user or request:url():match("^/repos") and user ~= request:url():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
+    if (not user or get_url_without_params():match("^/repos") and user ~= get_url_without_params():match("^/repos/([^/]+)/[^/]+[%(/.*)]?")) then
         return false;
     end
     log("authenticated user: " .. user);

@@ -12,7 +12,7 @@ local apis = {
 };
 
 function repo_apis()
-    local url = request:url():match("^[^%?]*");
+    local url = get_url_without_params();
     local method = request:GetMethod();
     for i = 1, #apis do
         if (url:match(apis[i][1]) and method == apis[i][2]) then
