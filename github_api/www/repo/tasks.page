@@ -85,6 +85,7 @@ end
 
 function check_file_exist(repo, path)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
+    log("check file: " .. repo .. " " .. dir .. " " .. name);
     local err, result = db.Dir:count({ ["+repo+dir+name+type"] = { repo, dir, name, "file" } });
     return result > 0;
 end
