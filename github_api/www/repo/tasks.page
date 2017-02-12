@@ -227,6 +227,7 @@ function update_file_by_content(repo, path, content)
     path = process_path(path);
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     local decoded_content = Encoding.unbase64(content);
+    log("decoded content: " .. decoded_content);
     local size = decoded_content:len();
     local record = db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { content = content, size = size, sha = get_sha_by_file(decoded_content, size) });
     add_dirs_by_path(repo, path);
