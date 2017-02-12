@@ -223,6 +223,7 @@ function get_repos_by_user(user)
 end
 
 function update_file_by_content(repo, path, content)
+    log("update file: " .. repo .. " " .. path .. " " .. content);
     path = process_path(path);
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     local decoded_content = Encoding.unbase64(content);
