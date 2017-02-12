@@ -19,11 +19,11 @@ local function check_user_exist(username)
 end
 
 local function create_user_in_db(username, password)
-    db.User:insertOne( nil, { username = username, password = Encoding.sha1(password) }, function(err, data) log("create user: " .. data.username .. " " .. data.password); end);
+    db.User:insertOne( nil, { username = username, password = Encoding.sha1(password, "hex") }, function(err, data) log("create user: " .. data.username .. " " .. data.password); end);
 end
 
 local function auth_user(username, password)
-    local err, count = db.User:count({ ["+username+password"] = { username, Encoding.sha1(password) } });
+    local err, count = db.User:count({ ["+username+password"] = { username, Encoding.sha1(password, "hex") } });
     log("auth user: " .. tostring(count));
     return count > 0;
 end

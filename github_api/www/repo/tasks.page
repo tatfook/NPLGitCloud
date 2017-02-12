@@ -157,7 +157,7 @@ end
 
 local function get_sha_by_file(content, size)
     local buffer = "blob " .. tostring(size) .. "\0" .. content;
-    local sha = EncodingSHA1.sha1(buffer);
+    local sha = EncodingSHA1.sha1(buffer, "hex");
     return sha;
 end
 
@@ -179,7 +179,7 @@ local function get_sha_by_dir(repo, dir, name)
     for i = 1, #buffers do
         buffer = buffer .. buffers[i];
     end
-    local sha = EncodingSHA1.sha1(buffer);
+    local sha = EncodingSHA1.sha1(buffer, "hex");
     return sha;
 end
 
