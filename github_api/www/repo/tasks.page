@@ -97,13 +97,14 @@ end
 
 local function get_file_from_db(record)
     local path = record["dir"] .. "/" .. record["name"];
-    local url = api_server_addr .. "/repos/" .. record["repo"] .. "/contents/" .. path;
+    local relative_path = path:gsub("^%./", "");
+    local url = api_server_addr .. "/repos/" .. record["repo"] .. "/contents/" .. relative_path;
     local result = {
         type = "file",
         encoding = "base64",
         size = record["size"],
         name = record["name"],
-        path = path,
+        path = relative_path,
         content = record["content"],
         sha = record["sha"],
         url = url,
@@ -116,12 +117,13 @@ end
 
 local function get_dir_item_from_db(record)
     local path = record["dir"] .. "/" .. record["name"];
-    local url = api_server_addr .. "/repos/" .. record["repo"] .. "/contents/" .. path;
+    local relative_path = path:gsub("^%./", "");
+    local url = api_server_addr .. "/repos/" .. record["repo"] .. "/contents/" .. relative_path;
     local result = {
         type = "dir",
         size = 0,
         name = record["name"],
-        path = path,
+        path = relative_path,
         sha = record["sha"],
         url = url,
         _links = {
