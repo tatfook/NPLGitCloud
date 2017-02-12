@@ -246,7 +246,7 @@ function create_repo_by_options(options)
     if (check_repo_exist(options["owner"], options["name"])) then
         return nil;
     end
-    local record = db.Repo:insertOne(nil, {
+    local err, record = db.Repo:insertOne(nil, {
         owner = options["owner"],
         name = options["name"],
         description = options["description"],
