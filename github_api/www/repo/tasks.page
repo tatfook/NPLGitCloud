@@ -10,6 +10,7 @@ db:EnableSyncMode(true);
 NPL.load("(gl)script/ide/Encoding.lua");
 NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
 local Encoding = commonlib.gettable("commonlib.Encoding");
+local EncodingSHA1 = commonlib.gettable("System.Encoding");
 
 local function get_size_by_repo(repo)
     local size = 0;
@@ -156,7 +157,7 @@ end
 
 local function get_sha_by_file(content, size)
     local buffer = "blob " .. tostring(size) .. "\0" .. content;
-    local sha = Encoding.sha1(buffer);
+    local sha = EncodingSHA1.sha1(buffer);
     return sha;
 end
 
@@ -178,7 +179,7 @@ local function get_sha_by_dir(repo, dir, name)
     for i = 1, #buffers do
         buffer = buffer .. buffers[i];
     end
-    local sha = Encoding.sha1(buffer);
+    local sha = EncodingSHA1.sha1(buffer);
     return sha;
 end
 
