@@ -192,7 +192,7 @@ local function split_path(path)
 end
 
 local function insert_dir_if_not_exist(repo, dir, name, type)
-    db.Dir:insertOne({ repo = repo, dir = dir, name = name }, {
+    db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, {
         repo = repo,
         dir = dir,
         name = name,
@@ -265,11 +265,11 @@ function create_repo_by_options(options)
     return repo;
 end
 
-function delete_repo_by_reponame(owner, reponame)
+function delete_repo_by_owner_reponame(owner, reponame)
     if (not check_repo_exist(owner, reponame)) then
         return false;
     end
-    db.Repo:deleteOne({ owner = owner, name = reponame }, function(err, count) end);
+    db.Repo:deleteOne({ ["+owner+name"] = { owner, reponame } }, function(err, count) end);
     db.Dir:delete({ repo = owner .. "/" .. reponame }, function(err, count) end);
     return true;
 end
@@ -294,7 +294,7 @@ function delete_file_by_options(options)
         return false;
     end
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    db.Dir:deleteOne({ repo = repo, dir = dir, name = name }, function(err, count) end);
+    db.Dir:deleteOne({ ["+repo+dir+name"] = { repo, dir, name } }, function(err, count) end);
     return true;
 end
 
