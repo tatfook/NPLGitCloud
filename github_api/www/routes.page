@@ -20,6 +20,7 @@ for i = 1, #apis do
 end
 
 if (not api_found) then
+    log("API not found");
     not_found();
 end
 ?>
