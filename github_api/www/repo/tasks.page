@@ -210,7 +210,7 @@ local function add_dirs_by_path(repo, path)
     for i = #paths - 1, 2, -1 do
         insert_dir_if_not_exist(repo, paths[i - 1], dir[i], "dir");
     end
-    insert_dir_if_not_exist(repo, paths[#paths - 1], dir[#paths], "file"]);
+    insert_dir_if_not_exist(repo, paths[#paths - 1], dir[#paths], "file");
 end
 
 function get_repos_by_user(user)
