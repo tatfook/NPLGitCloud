@@ -89,7 +89,8 @@ function delete_file()
         login_failed();
         return;
     end
-    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
+    local fullname = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?");
+    local path = process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)"));
     local body = request:GetBody();
     if (check_file_exist(repo, path)) then
         local sha = get_body_optional(body, "sha", nil);
@@ -134,9 +135,9 @@ function update_file()
         login_failed();
         return;
     end
-    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
+    local fullname = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?");
+    local path =  process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)"));
     local body = request:GetBody();
-    local path = get_body_optional(body, "path", nil);
     local content = get_body_optional(body, "content", nil);
     if (not path or not content) then
         local errors = {};
