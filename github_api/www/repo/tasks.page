@@ -211,7 +211,6 @@ local function add_dirs_by_path(repo, path)
     for i = #paths - 1, 2, -1 do
         insert_dir_if_not_exist(repo, paths[i - 1], dirs[i], "dir");
     end
-    insert_dir_if_not_exist(repo, paths[#paths - 1], dirs[#paths], "file");
 end
 
 function get_repos_by_user(user)
@@ -235,7 +234,7 @@ function update_file_by_content(repo, path, content)
     end
     log("decoded content: " .. decoded_content);
     local size = decoded_content:len();
-    local err, record = db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { content = content, size = size, sha = get_sha_by_file(decoded_content, size) });
+    local err, record = db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { repo = repo, dir = dir, name = name, type = "file", content = content, size = size, sha = get_sha_by_file(decoded_content, size) });
     add_dirs_by_path(repo, path);
     local result = {
         content = get_file_from_db(record);
