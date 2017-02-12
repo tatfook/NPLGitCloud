@@ -8,6 +8,9 @@ local apis = {
     repo_apis
 };
 
+log("URL: " .. request:url());
+log("method: " .. request:GetMethod());
+
 local api_found = false;
 for i = 1, #apis do
     if (apis[i]()) then
