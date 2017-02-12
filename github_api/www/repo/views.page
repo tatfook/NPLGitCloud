@@ -92,7 +92,7 @@ function delete_file()
     local fullname = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents?(/.*)");
     local path = process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents(?(/.*))"));
     local body = request:GetBody();
-    if (check_file_exist(repo, path)) then
+    if (check_file_exist(fullname, path)) then
         local sha = get_body_optional(body, "sha", nil);
         if (not sha) then
             local errors = { {
@@ -139,7 +139,7 @@ function update_file()
     local path =  process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents(?(/.*))"));
     local body = request:GetBody();
     local content = get_body_optional(body, "content", nil);
-    if (not path or not content) then
+    if (not content) then
         local errors = {};
         if (not path) then
             table.insert(errors, {
@@ -156,7 +156,7 @@ function update_file()
         invalid_json_fields("Fields Missing", errors);
         return;
     end
-    if (check_file_exist(repo, path)) then
+    if (check_file_exist(fullname, path)) then
         local sha = get_body_optional(body, "sha", nil);
         if (not sha) then
             local errors = { {
