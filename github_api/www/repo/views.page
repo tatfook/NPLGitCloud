@@ -91,13 +91,32 @@ function delete_file()
     end
     local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local body = request:GetBody();
-    local sha = get_body_optional(body, "sha", nil);
-    if (not sha) then
+    if (check_file_exist(repo, path)) then
+        local sha = get_body_optional(body, "sha", nil);
+        if (not sha) then
+            local errors = { {
+                field = "sha",
+                code = "missing_field"
+            } };
+            invalid_json_fields("Fields Missing", errors);
+            return;
+        end
+        if (not check_sha_by_file(repo, path, sha)) then
+            local errors = { {
+                resource = sha,
+                field = "sha",
+                code = "invalid"
+            } };
+            invalid_json_fields("SHA Conflict", errors);
+            return;
+        end
+    else
         local errors = { {
-            field = "sha",
-            code = "missing_field"
+            resource = path:gsub("^%./", ""),
+            field = "path",
+            code = "invalid"
         } };
-        invalid_json_fields("Fields Missing", errors);
+        invalid_json_fields("File Not Exist", errors);
         return;
     end
     local options = {
@@ -105,11 +124,8 @@ function delete_file()
         path = path,
         sha = sha
     };
-    if (delete_file_by_options(options)) then
-        no_content();
-    else
-        not_found();
-    end
+    delete_file_by_options(options);
+    no_content();
 end
 
 function update_file()

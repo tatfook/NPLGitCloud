@@ -294,12 +294,8 @@ end
 
 function delete_file_by_options(options)
     local repo, path = options["repo"], process_path(options["path"]);
-    if (not check_file_exist(repo, path)) then
-        return false;
-    end
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     db.Dir:deleteOne({ ["+repo+dir+name"] = { repo, dir, name } }, function(err, count) end);
-    return true;
 end
 
 function get_trees_by_repo(repo)
