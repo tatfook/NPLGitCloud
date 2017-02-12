@@ -235,7 +235,7 @@ function update_file_by_content(repo, path, content)
     end
     log("decoded content: " .. decoded_content);
     local size = decoded_content:len();
-    local record = db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { content = content, size = size, sha = get_sha_by_file(decoded_content, size) });
+    local err, record = db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { content = content, size = size, sha = get_sha_by_file(decoded_content, size) });
     add_dirs_by_path(repo, path);
     local result = {
         content = get_file_from_db(record);
