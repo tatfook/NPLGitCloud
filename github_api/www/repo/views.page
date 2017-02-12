@@ -62,7 +62,7 @@ function delete_repo()
     end
     local reponame = get_url_without_params():match("^/repos/[^/]+/([^/]+)");
     if (delete_repo_by_owner_reponame(owner, reponame)) then
-        request:status(204):send();
+        response:status(204):send();
     else
         not_found();
     end
@@ -77,7 +77,7 @@ function get_contents()
     local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents[%(/.*)]?"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents([%(/.*)]?)");
     local contents = get_contents_by_repo_path(fullname, path);
     if (contents) then
-        request:send_json(contents);
+        response:send_json(contents);
     else
         not_found();
     end
