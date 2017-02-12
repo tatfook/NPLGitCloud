@@ -6,9 +6,9 @@ local apis = {
     { "^/user/repos$", "POST", create_repo },
     { "^/repos/[^/]+/[^/]+$", "DELETE", delete_repo },
     { "^/repos/[^/]+/[^/]+/git/trees/master$", "GET", get_trees },
-    { "^/repos/[^/]+/[^/]+/contents[%(/.*)]?$", "GET", get_contents },
-    { "^/repos/[^/]+/[^/]+/contents[%(/.*)]?$", "DELETE", delete_file },
-    { "^/repos/[^/]+/[^/]+/contents[%(/.*)]?$", "PUT", update_file }
+    { "^/repos/[^/]+/[^/]+/contents?(/.*)$", "GET", get_contents },
+    { "^/repos/[^/]+/[^/]+/contents?(/.*)?$", "DELETE", delete_file },
+    { "^/repos/[^/]+/[^/]+/contents?(/.*)?$", "PUT", update_file }
 };
 
 function repo_apis()
