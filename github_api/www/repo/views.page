@@ -74,7 +74,7 @@ function get_contents()
         login_failed();
         return;
     end
-    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents(/.*)");
+    local fullname, path = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents"), get_url_without_params():match("^/repos/[^/]+/[^/]+/contents/(.*)");
     local contents = get_contents_by_repo_path(fullname, path);
     if (contents) then
         response:send_json(contents);
@@ -90,7 +90,7 @@ function delete_file()
         return;
     end
     local fullname = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents");
-    local path = process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents(/.*)"));
+    local path = process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents/(.*)"));
     local body = request:GetBody();
     if (check_file_exist(fullname, path)) then
         local sha = get_body_optional(body, "sha", nil);
@@ -136,7 +136,7 @@ function update_file()
         return;
     end
     local fullname = get_url_without_params():match("^/repos/([^/]+/[^/]+)/contents");
-    local path =  process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents(/.*)"));
+    local path =  process_path(get_url_without_params():match("^/repos/[^/]+/[^/]+/contents/(.*)"));
     local body = request:GetBody();
     local content = get_body_optional(body, "content", nil);
     if (not content) then
