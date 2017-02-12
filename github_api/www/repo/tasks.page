@@ -277,6 +277,7 @@ end
 
 function get_contents_by_repo_path(repo, path)
     path = process_path(path);
+    log("get contents: " .. repo .. " " .. path);
     local type = check_path_exist(repo, path);
     if (not type) then
         return nil;
