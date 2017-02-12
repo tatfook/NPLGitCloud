@@ -171,6 +171,6 @@ function get_trees()
     end
     local repo = get_url_without_params():match("^/repos/([^/]+/[^/]+)/git/trees/master");
     local result = get_trees_by_repo(repo);
-    return result;
+    response:send_json(result);
 end
 ?>
