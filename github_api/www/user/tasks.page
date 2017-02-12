@@ -93,8 +93,12 @@ end
 
 function get_user_by_access_token(access_token)
     local err, record = db.AccessToken:findOne({ access_token = access_token });
-    local result = record["user"];
-    return result;
+    if (record) then
+        local result = record["user"];
+        return result;
+    else
+        return nil;
+    end
 end
 
 local function get_user_from_db(record)
