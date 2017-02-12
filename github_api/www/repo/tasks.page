@@ -147,11 +147,14 @@ local function get_items_by_dir(repo, dir)
 end
 
 function process_path(path)
-    if (path == "." or path:match("^%./")) then
-        return path;
-    end
     local result = path;
-    if (not result or result == "" or result == "/") then
+    if (not result) then
+        result = ".";
+    end
+    if (result == "." or result:match("^%./")) then
+        return result;
+    end
+    if (result == "" or result == "/") then
         result = ".";
     else
         result = "./" .. result;
