@@ -266,6 +266,7 @@ function create_repo_by_options(options)
 end
 
 function delete_repo_by_owner_reponame(owner, reponame)
+    log("will delete: " .. owner .. " " .. reponame);
     if (not check_repo_exist(owner, reponame)) then
         return false;
     end
