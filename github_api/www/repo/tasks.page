@@ -135,7 +135,7 @@ local function get_dir_item_from_db(record)
 end
 
 local function get_file_by_repo_path(repo, dir, filename)
-    local record = db.Dir:findOne({ ["+repo+dir+name+type"] = { repo, dir, filename, "file" } });
+    local err, record = db.Dir:findOne({ ["+repo+dir+name+type"] = { repo, dir, filename, "file" } });
     local result = get_file_from_db(record);
     return result;
 end
