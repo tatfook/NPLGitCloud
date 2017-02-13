@@ -176,7 +176,7 @@ function update_file()
             return;
         end
     end
-    local result = update_file_by_content(repo, path, content);
+    local result = update_file_by_content(fullname, path, content);
     response:send_json(result);
 end
 
