@@ -136,7 +136,7 @@ end
 
 local function get_file_by_repo_path(repo, dir, filename)
     local record = db.Dir:findOne({ ["+repo+dir+name+type"] = { repo, dir, filename, "file" } });
-    lcoal result = get_file_from_db(record);
+    local result = get_file_from_db(record);
     return result;
 end
 
