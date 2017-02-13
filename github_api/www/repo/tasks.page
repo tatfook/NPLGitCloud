@@ -14,7 +14,8 @@ local EncodingSHA1 = commonlib.gettable("System.Encoding");
 
 local function get_size_by_repo(repo)
     local size = 0;
-    local err, records = db.Dir:find({ ["+repo+type"] = { repo, "file" } });
+    db.Dir:find({ ["+repo+type"] = { repo, "file" } }, function(err, records) resume(err, records); end);
+    local err, records = yield(true);
     for i = 1, #records do
         size = size + records[i]["size"];
     end
@@ -58,7 +59,8 @@ local function get_repo_from_db(record)
 end
 
 local function check_repo_exist(owner, reponame)
-    local err, count = db.Repo:count({ ["+owner+name"] = { owner, reponame } });
+    db.Repo:count({ ["+owner+name"] = { owner, reponame } }, function(err, count) resume(err, count); end);
+    local err, count = yield(true);
     return count > 0;
 end
 
@@ -76,7 +78,8 @@ local function check_path_exist(repo, path)
     end
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     local result;
-    local err, record = db.Dir:findOne({ ["+repo+dir+name"] = { repo, dir, name } });
+    db.Dir:findOne({ ["+repo+dir+name"] = { repo, dir, name } }, function(err, record) resume(err, record); end);
+    local err, record = yield(true);
     if (record) then
         result = record["type"];
     end
@@ -86,13 +89,15 @@ end
 function check_file_exist(repo, path)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
     log("check file: " .. repo .. " " .. dir .. " " .. name);
-    local err, result = db.Dir:count({ ["+repo+dir+name+type"] = { repo, dir, name, "file" } });
+    db.Dir:count({ ["+repo+dir+name+type"] = { repo, dir, name, "file" } }, function(err, result) resume(err, result); end);
+    local err, result = yield(true);
     return result > 0;
 end
 
 function check_sha_by_file(repo, path, sha)
     local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    local err, result = db.Dir:count({ ["+repo+dir+name+type+sha"] = { repo, dir, name, "file", sha } });
+    db.Dir:count({ ["+repo+dir+name+type+sha"] = { repo, dir, name, "file", sha } }, function(err, result) resume(err, result); end);
+    local err, result = yield(true);
     return result > 0;
 end
 
@@ -135,14 +140,16 @@ local function get_dir_item_from_db(record)
 end
 
 local function get_file_by_repo_path(repo, dir, filename)
-    local err, record = db.Dir:findOne({ ["+repo+dir+name+type"] = { repo, dir, filename, "file" } });
+    db.Dir:findOne({ ["+repo+dir+name+type"] = { repo, dir, filename, "file" } }, function(err, record) resume(err, record); end);
+    local err, record = yield(true);
     local result = get_file_from_db(record);
     return result;
 end
 
 local function get_items_by_dir(repo, dir)
     local results = {};
-    local err, records = db.Dir:find({ ["+repo+dir"] = { repo, dir } });
+    db.Dir:find({ ["+repo+dir"] = { repo, dir } }, function(err, records) resume(err, records); end);
+    local err, records = yield(true);
     for i = 1, #records do
         if (records[i]["type"] == "file") then
             table.insert(results, get_file_from_db(records[i]));
@@ -230,7 +237,8 @@ end
 
 function get_repos_by_user(user)
     local repos = {};
-    local err, records = db.Repo:find({ owner = user });
+    db.Repo:find({ owner = user }, function(err, records) resume(err, records); end);
+    local err, records = yield(true);
     for i = 1, #records do
         table.insert(repos, get_repo_from_db(records[i]));
     end
@@ -250,7 +258,8 @@ function update_file_by_content(repo, path, content)
     log("decoded content: " .. decoded_content);
     local size = decoded_content:len();
     log("size: " .. tostring(size));
-    local err, record = db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { repo = repo, dir = dir, name = name, type = "file", content = content, size = size, sha = get_sha_by_file(decoded_content, size) });
+    db.Dir:insertOne({ ["+repo+dir+name"] = { repo, dir, name } }, { repo = repo, dir = dir, name = name, type = "file", content = content, size = size, sha = get_sha_by_file(decoded_content, size) }, function(err, record) resume(err, record); end);
+    local err, record = yield(true);
     add_dirs_by_path(repo, path);
     local result = {
         content = get_file_from_db(record);
@@ -262,7 +271,7 @@ function create_repo_by_options(options)
     if (check_repo_exist(options["owner"], options["name"])) then
         return nil;
     end
-    local err, record = db.Repo:insertOne(nil, {
+    db.Repo:insertOne(nil, {
         owner = options["owner"],
         name = options["name"],
         description = options["description"],
@@ -271,7 +280,8 @@ function create_repo_by_options(options)
         has_issues = options["has_issues"],
         has_wiki = options["has_wiki"],
         has_downloads = options["has_downloads"]
-    });
+    }, function(err, record) resume(err, record); end);
+    local err, record = yield(true);
     local fullname = options["owner"] .. "/" .. options["name"];
     if (options["auto_init"]) then
         update_file_by_content(fullname, "README.md", "");
@@ -313,7 +323,8 @@ end
 
 function get_trees_by_repo(repo)
     local result = {};
-    local err, records = db.Dir:find({ repo = repo });
+    db.Dir:find({ repo = repo }, function(err, records) resume(err, records); end);
+    local err, records = yield(true);
     for i = 1, #records do
         local path = records[i]["dir"] .. "/" .. records[i]["name"];
         path = path:gsub("^%./", "");

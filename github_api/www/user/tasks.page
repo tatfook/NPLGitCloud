@@ -13,7 +13,8 @@ local access_token_length = 40;
 local alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 local function check_user_exist(username)
-    local err, count = db.User:count({ username = username });
+    db.User:count({ username = username }, function(err, count) resume(err, count); end);
+    local err, count = yield(true);
     log("check user: " .. tostring(count));
     return count > 0;
 end
@@ -23,14 +24,16 @@ local function create_user_in_db(username, password)
 end
 
 local function auth_user(username, password)
-    local err, count = db.User:count({ ["+username+password"] = { username, Encoding.sha1(password, "hex") } });
+    db.User:count({ ["+username+password"] = { username, Encoding.sha1(password, "hex") } }, function(err, count) resume(err, count); end);
+    local err, count = yield(true);
     log("auth user: " .. tostring(count));
     return count > 0;
 end
 
 local function get_access_tokens_in_db(username)
     local results = {};
-    local err, rows = db.AccessToken:find({ user = username });
+    db.AccessToken:find({ user = username }, function(err, rows) resume(err, rows); end);
+    local err, rows = yield(true);
     log("found access tokens: " .. #rows);
     for i = 1, #rows do
         table.insert(results, rows[i]["access_token"]);
@@ -48,7 +51,8 @@ local function get_random_access_token()
 end
 
 local function check_access_token_exist(access_token)
-    local err, count = db.AccessToken:count({ access_token = access_token });
+    db.AccessToken:count({ access_token = access_token }, function(err, count) resume(err, count); end);
+    local err, count = yield(true);
     return count > 0;
 end
 
@@ -92,7 +96,8 @@ function create_access_token_by_username_password(username, password)
 end
 
 function get_user_by_access_token(access_token)
-    local err, record = db.AccessToken:findOne({ access_token = access_token });
+    db.AccessToken:findOne({ access_token = access_token }, function(err, record) resume(err, record); end);
+    local err, record = yield(true);
     if (record) then
         local result = record["user"];
         return result;
@@ -111,7 +116,8 @@ local function get_user_from_db(record)
 end
 
 function get_user_by_username(username)
-    local err, record = db.User:findOne({ username = username});
+    db.User:findOne({ username = username}, function(err, record) resume(err, record); end);
+    local err, record = yield(true);
     local result = get_user_from_db(record);
     return result;
 end
