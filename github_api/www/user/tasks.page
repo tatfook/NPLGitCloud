@@ -1,7 +1,5 @@
 <?npl
-NPL.load("(gl)script/ide/System/Database/TableDatabase.lua");
-local TableDatabase = commonlib.gettable("System.Database.TableDatabase");
-local db = TableDatabase:new():connect("db/", function() end);
+include_once("../db.page");
 
 NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
 local Encoding = commonlib.gettable("System.Encoding");
