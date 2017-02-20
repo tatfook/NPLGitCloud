@@ -1,0 +1,102 @@
+NPL bin dir: /home/hephaestus/Documents/NPLRuntime/ParaWorld/bin64/
+no packages at: /home/hephaestus/Documents/NPLRuntime/ParaWorld/packages
+ParaEngine Root Dir is /mnt/hgfs/NPLGitCloud/dgit/
+search path: /home/hephaestus/Documents/NPLRuntime/npl_packages/main/
+./packages dir: /mnt/hgfs/NPLGitCloud/dgit/
+We are using default bootstrapper at script/apps/WebServer/WebServer.lua
+main loop: script/apps/WebServer/WebServer.lua 
+CAssetManifest loaded 0 files
+CAsyncLoader is started with 1 IO thread and 2 worker thread
+warning: ParaEngine::LoadLibrary( ./libPhysicsBT.so ) failed because ./libPhysicsBT.so: cannot open shared object file: No such file or directory
+Failed loading plug-in: ./libPhysicsBT.so
+note: no physics engine found, null physics is used 
+2017-02-20 15:12:11|803739584|ParaEngineServer started
+(main) state is now running in a separate thread. It is more responsive now. 
+ParaEngine LuaJIT 64bits version:LuaJIT 2.0.4
+Jit status:true, CMOV, SSE2, SSE3, SSE4.1, fold, cse, dce, fwd, dse, narrow, loop, abc, sink, fuse 
+ffi loaded shared lib: C
+2017-02-20 15:12:11|main|info|WebServer|web root directory is changed to : script/apps/WebServer/admin
+2017-02-20 15:12:11|main|system|WebServer|config file script/apps/WebServer/admin/webserver.config.xml
+2017-02-20 15:12:11|main|system|WebServer|rule id=npl_code_wiki is loaded with 3 rules
+2017-02-20 15:12:11|main|system|WebServer|rule id=simple_rule is loaded with 8 rules
+2017-02-20 15:12:11|main|system|NPL|NPL input queue size is changed to 20000
+2017-02-20 15:12:11|main|info|Log|log level is set to debug
+FileSystemWatcher: default created
+warning: failed adding dir /mnt/hgfs/NPLGitCloud/dgit/script/apps/WebServer/admin/ to monitor 
+2017-02-20 15:12:11|main|system|WebServer|NPL Web Server is started. 
+NPL server 0.1 is listening on 0.0.0.0:8099
+TCPKeepAlive: true
+AppKeepAlive: false
+IdleTimeout: true
+IdleTimeoutPeriod: 1200000
+UseCompression(incoming): false
+CompressionLevel: -1
+CompressionThreshold: 204800
+NPL bin dir: /home/hephaestus/Documents/NPLRuntime/ParaWorld/bin64/
+no packages at: /home/hephaestus/Documents/NPLRuntime/ParaWorld/packages
+ParaEngine Root Dir is /mnt/hgfs/NPLGitCloud/dgit/
+search path: /home/hephaestus/Documents/NPLRuntime/npl_packages/main/
+./packages dir: /mnt/hgfs/NPLGitCloud/dgit/
+We are using default bootstrapper at script/apps/WebServer/WebServer.lua
+main loop: script/apps/WebServer/WebServer.lua 
+CAssetManifest loaded 0 files
+CAsyncLoader is started with 1 IO thread and 2 worker thread
+warning: ParaEngine::LoadLibrary( ./libPhysicsBT.so ) failed because ./libPhysicsBT.so: cannot open shared object file: No such file or directory
+Failed loading plug-in: ./libPhysicsBT.so
+note: no physics engine found, null physics is used 
+2017-02-20 15:12:18|-625694784|ParaEngineServer started
+(main) state is now running in a separate thread. It is more responsive now. 
+ParaEngine LuaJIT 64bits version:LuaJIT 2.0.4
+Jit status:true, CMOV, SSE2, SSE3, SSE4.1, fold, cse, dce, fwd, dse, narrow, loop, abc, sink, fuse 
+ffi loaded shared lib: C
+2017-02-20 15:12:18|main|info|WebServer|web root directory is changed to : script/apps/WebServer/admin
+2017-02-20 15:12:18|main|system|WebServer|config file script/apps/WebServer/admin/webserver.config.xml
+2017-02-20 15:12:18|main|system|WebServer|rule id=npl_code_wiki is loaded with 3 rules
+2017-02-20 15:12:18|main|system|WebServer|rule id=simple_rule is loaded with 8 rules
+2017-02-20 15:12:18|main|system|NPL|NPL input queue size is changed to 20000
+2017-02-20 15:12:18|main|info|Log|log level is set to debug
+FileSystemWatcher: default created
+warning: failed adding dir /mnt/hgfs/NPLGitCloud/dgit/script/apps/WebServer/admin/ to monitor 
+2017-02-20 15:12:18|main|system|WebServer|NPL Web Server is started. 
+NPL server 0.1 is listening on 0.0.0.0:8099
+TCPKeepAlive: true
+AppKeepAlive: false
+IdleTimeout: true
+IdleTimeoutPeriod: 1200000
+UseCompression(incoming): false
+CompressionLevel: -1
+CompressionThreshold: 204800
+NPL bin dir: /home/hephaestus/Documents/NPLRuntime/ParaWorld/bin64/
+no packages at: /home/hephaestus/Documents/NPLRuntime/ParaWorld/packages
+ParaEngine Root Dir is /mnt/hgfs/NPLGitCloud/dgit/
+search path: /home/hephaestus/Documents/NPLRuntime/npl_packages/main/
+./packages dir: /mnt/hgfs/NPLGitCloud/dgit/
+We are using default bootstrapper at script/apps/WebServer/WebServer.lua
+main loop: script/apps/WebServer/WebServer.lua 
+CAssetManifest loaded 0 files
+CAsyncLoader is started with 1 IO thread and 2 worker thread
+warning: ParaEngine::LoadLibrary( ./libPhysicsBT.so ) failed because ./libPhysicsBT.so: cannot open shared object file: No such file or directory
+Failed loading plug-in: ./libPhysicsBT.so
+note: no physics engine found, null physics is used 
+2017-02-20 15:12:33|230406080|ParaEngineServer started
+(main) state is now running in a separate thread. It is more responsive now. 
+ParaEngine LuaJIT 64bits version:LuaJIT 2.0.4
+Jit status:true, CMOV, SSE2, SSE3, SSE4.1, fold, cse, dce, fwd, dse, narrow, loop, abc, sink, fuse 
+ffi loaded shared lib: C
+2017-02-20 15:12:33|main|info|WebServer|web root directory is changed to : script/apps/WebServer/admin
+2017-02-20 15:12:33|main|system|WebServer|config file script/apps/WebServer/admin/webserver.config.xml
+2017-02-20 15:12:33|main|system|WebServer|rule id=npl_code_wiki is loaded with 3 rules
+2017-02-20 15:12:33|main|system|WebServer|rule id=simple_rule is loaded with 8 rules
+2017-02-20 15:12:33|main|system|NPL|NPL input queue size is changed to 20000
+2017-02-20 15:12:33|main|info|Log|log level is set to debug
+FileSystemWatcher: default created
+warning: failed adding dir /mnt/hgfs/NPLGitCloud/dgit/script/apps/WebServer/admin/ to monitor 
+2017-02-20 15:12:33|main|system|WebServer|NPL Web Server is started. 
+NPL server 0.1 is listening on 0.0.0.0:8099
+TCPKeepAlive: true
+AppKeepAlive: false
+IdleTimeout: true
+IdleTimeoutPeriod: 1200000
+UseCompression(incoming): false
+CompressionLevel: -1
+CompressionThreshold: 204800
