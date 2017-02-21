@@ -8,6 +8,8 @@ NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
 local Encoding = commonlib.gettable("commonlib.Encoding");
 local EncodingSHA1 = commonlib.gettable("System.Encoding");
 
+NPL.load("../../../dgit/dgit_interface.lua");
+
 local function get_size_by_repo(repo)
     local size = 0;
     db.Dir:find({ ["+repo+type"] = { repo, "file" } }, function(err, records) resume(err, records); end);
@@ -279,9 +281,22 @@ function create_repo_by_options(options)
     }, function(err, record) resume(err, record); end);
     local err, record = yield(true);
     local fullname = options["owner"] .. "/" .. options["name"];
+    local is_bare;
     if (options["auto_init"]) then
         update_file_by_content(fullname, "README.md", "");
+        is_bare = 0;
+    else
+        is_bare = 1;
     end
+
+    dgit_interface_repoInit({
+        1 = fullname,
+        2 = is_bare
+    }, function(error_code)
+        resume();
+    end);
+    yield();
+
     local repo = get_repo_from_db(record);
     return repo;
 end
@@ -293,6 +308,14 @@ function delete_repo_by_owner_reponame(owner, reponame)
     end
     db.Repo:deleteOne({ ["+owner+name"] = { owner, reponame } }, function(err, count) end);
     db.Dir:delete({ repo = owner .. "/" .. reponame }, function(err, count) end);
+
+    dgit_interface_deleteRepo({
+        1 = owner .. "/" .. reponame
+    }, function(error_code)
+        resume();
+    end);
+    yield();
+
     return true;
 end
 
