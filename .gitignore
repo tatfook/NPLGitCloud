@@ -8,3 +8,5 @@ github_api/log.txt
 github_api/log/
 github_api/db/
 *.swp
+log.txt
+assets.log
