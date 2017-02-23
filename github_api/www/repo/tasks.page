@@ -320,18 +320,28 @@ function delete_repo_by_owner_reponame(owner, reponame)
 end
 
 function get_contents_by_repo_path(repo, path)
-    path = process_path(path);
-    log("get contents: " .. repo .. " " .. path);
-    local type = check_path_exist(repo, path);
-    if (not type) then
-        return nil;
-    end
-    if (type == "file") then
-        local dir, filename = get_dir_by_path(path), get_name_by_path(path);
-        return get_file_by_repo_path(repo, dir, filename);
-    else
-        return get_items_by_dir(repo, path);
-    end
+    path = path:gsub("^%./", "");
+    dgit_interface_getContent({
+        1 = repo,
+        2 = "master",
+        3 = path
+    }, function(arr)
+        local url = api_server_addr .. "/repos/" .. repo .. "/contents/" .. path,
+        local result = {
+            type = "file",
+            size = arr[2]:len(),
+            name = get_name_by_path(path),
+            path = path,
+            content = Encoding.base64(arr[2]),
+            url = url,
+            _link = {
+                self = url
+            }
+        }
+        resume(result);
+    end);
+    local result = yield(true);
+    return result;
 end
 
 function delete_file_by_options(options)
