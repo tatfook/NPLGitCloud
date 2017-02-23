@@ -233,6 +233,20 @@ local function add_dirs_by_path(repo, path)
     end
 end
 
+local delete_file_from_db(repo, path)
+    db.File:deleteOne({ ["+repo+path"] = { repo, path } }, function(err, count) end);
+end
+
+local add_file_to_db(repo, path)
+    db.File:insertOne({ ["+repo+path"] = { repo, path } }, { repo = repo, path = path }, function(err, data) end);
+end
+
+local does_file_exist_in_db(repo, path)
+    db.File:count({ ["+repo+path"] = { repo, path } }, function(err, count) resume(count); end);
+    local count = yield(true);
+    return count > 0;
+end
+
 function get_repos_by_user(user)
     local repos = {};
     db.Repo:find({ owner = user }, function(err, records) resume(err, records); end);
@@ -346,6 +360,7 @@ function get_contents_by_repo_path(repo, path)
 end
 
 function delete_file_by_options(options)
+    delete_file_from_db(options["repo"], options["path"]);
     dgit_interface_deleteFile({
         1 = options["repo"],
         2 = options["path"],
