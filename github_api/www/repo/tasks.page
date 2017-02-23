@@ -333,6 +333,7 @@ function get_contents_by_repo_path(repo, path)
             name = get_name_by_path(path),
             path = path,
             content = Encoding.base64(arr[2]),
+            sha = get_sha_by_file(content, content:len()),
             url = url,
             _link = {
                 self = url
