@@ -374,6 +374,32 @@ function delete_file_by_options(options)
     return err_code;
 end
 
+function update_file_by_options(options)
+    local o = {
+        1 = options["repo"],
+        2 = options["path"],
+        3 = options["commit_msg"],
+        4 = options["branch_name"],
+        5 = options["origin_sha"],
+        6 = options["content_length"],
+        7 = options["content"]
+    };
+    if (does_file_exist_in_db(options["repo"], options["path"])) then
+        dgit_interface_updateFile(o, function(arr)
+            resume(arr[1]);
+        end);
+        local err_code = yield(true);
+        return err_code;
+    else
+        add_file_to_db(options["repo"], options["path"]);
+        dgit_interface_addFile(o, function(arr)
+            resume(arr[1]);
+        end);
+        local err_code = yield(true);
+        return err_code;
+    end
+end
+
 function get_trees_by_repo(repo, sha)
     if (sha == "master") then
         sha = "HEAD"

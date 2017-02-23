@@ -45,6 +45,20 @@ function login_failed()
     response:status(401):send_json(body);
 end
 
+function delete_failed()
+    local body = {
+        message = "Failed to Delete File"
+    };
+    response:status(400):send_json(body);
+end
+
+function update_failed()
+    local body = {
+        message = "Failed to Add/Update File"
+    };
+    response:status(400):send_json(body);
+end
+
 function get_url_without_params()
     return request:url():match("^[^%?]*");
 end
