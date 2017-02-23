@@ -345,9 +345,17 @@ function get_contents_by_repo_path(repo, path)
 end
 
 function delete_file_by_options(options)
-    local repo, path = options["repo"], process_path(options["path"]);
-    local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    db.Dir:deleteOne({ ["+repo+dir+name"] = { repo, dir, name } }, function(err, count) end);
+    dgit_interface_deleteFile({
+        1 = options["repo"],
+        2 = options["path"],
+        3 = options["commit_msg"],
+        4 = options["branch_name"],
+        5 = options["origin_sha"]
+    }, function(arr)
+        resume(arr[1]);
+    end);
+    local err_code = yield(true);
+    return err_code;
 end
 
 function get_trees_by_repo(repo, sha)
