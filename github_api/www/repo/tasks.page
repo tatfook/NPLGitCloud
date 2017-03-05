@@ -304,8 +304,8 @@ function create_repo_by_options(options)
     end
 
     dgit_interface_repoInit({
-        1 = fullname,
-        2 = is_bare
+        [1] = fullname,
+        [2] = is_bare
     }, function(error_code)
         resume();
     end);
@@ -324,7 +324,7 @@ function delete_repo_by_owner_reponame(owner, reponame)
     db.Dir:delete({ repo = owner .. "/" .. reponame }, function(err, count) end);
 
     dgit_interface_deleteRepo({
-        1 = owner .. "/" .. reponame
+        [1] = owner .. "/" .. reponame
     }, function(error_code)
         resume();
     end);
@@ -336,9 +336,9 @@ end
 function get_contents_by_repo_path(repo, path)
     path = path:gsub("^%./", "");
     dgit_interface_getContent({
-        1 = repo,
-        2 = "master",
-        3 = path
+        [1] = repo,
+        [2] = "master",
+        [3] = path
     }, function(arr)
         local url = api_server_addr .. "/repos/" .. repo .. "/contents/" .. path,
         local result = {
@@ -362,11 +362,11 @@ end
 function delete_file_by_options(options)
     delete_file_from_db(options["repo"], options["path"]);
     dgit_interface_deleteFile({
-        1 = options["repo"],
-        2 = options["path"],
-        3 = options["commit_msg"],
-        4 = options["branch_name"],
-        5 = options["origin_sha"]
+        [1] = options["repo"],
+        [2] = options["path"],
+        [3] = options["commit_msg"],
+        [4] = options["branch_name"],
+        [5] = options["origin_sha"]
     }, function(arr)
         resume(arr[1]);
     end);
@@ -376,13 +376,13 @@ end
 
 function update_file_by_options(options)
     local o = {
-        1 = options["repo"],
-        2 = options["path"],
-        3 = options["commit_msg"],
-        4 = options["branch_name"],
-        5 = options["origin_sha"],
-        6 = options["content_length"],
-        7 = options["content"]
+        [1] = options["repo"],
+        [2] = options["path"],
+        [3] = options["commit_msg"],
+        [4] = options["branch_name"],
+        [5] = options["origin_sha"],
+        [6] = options["content_length"],
+        [7] = options["content"]
     };
     if (does_file_exist_in_db(options["repo"], options["path"])) then
         dgit_interface_updateFile(o, function(arr)
@@ -405,8 +405,8 @@ function get_trees_by_repo(repo, sha)
         sha = "HEAD"
     end
     dgit_interface_traverseTree({
-        1 = repo,
-        2 = sha
+        [1] = repo,
+        [2] = sha
     }, function(array)
         local tree_oid = array[2];
         local tree = {};
