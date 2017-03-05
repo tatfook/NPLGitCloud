@@ -340,7 +340,7 @@ function get_contents_by_repo_path(repo, path)
         [2] = "master",
         [3] = path
     }, function(arr)
-        local url = api_server_addr .. "/repos/" .. repo .. "/contents/" .. path,
+        local url = api_server_addr .. "/repos/" .. repo .. "/contents/" .. path;
         local result = {
             type = "file",
             size = arr[2]:len(),
@@ -352,7 +352,7 @@ function get_contents_by_repo_path(repo, path)
             _link = {
                 self = url
             }
-        }
+        };
         resume(result);
     end);
     local result = yield(true);
