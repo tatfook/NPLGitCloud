@@ -233,15 +233,15 @@ local function add_dirs_by_path(repo, path)
     end
 end
 
-local delete_file_from_db(repo, path)
+local function delete_file_from_db(repo, path)
     db.File:deleteOne({ ["+repo+path"] = { repo, path } }, function(err, count) end);
 end
 
-local add_file_to_db(repo, path)
+local function add_file_to_db(repo, path)
     db.File:insertOne({ ["+repo+path"] = { repo, path } }, { repo = repo, path = path }, function(err, data) end);
 end
 
-local does_file_exist_in_db(repo, path)
+local function does_file_exist_in_db(repo, path)
     db.File:count({ ["+repo+path"] = { repo, path } }, function(err, count) resume(count); end);
     local count = yield(true);
     return count > 0;
