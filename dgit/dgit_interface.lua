@@ -1,4 +1,3 @@
-<?npl
 NPL.load("(gl)script/ide/System/System.lua");
 
 local charset = {}
@@ -90,4 +89,3 @@ local function activate()
 end
 
 NPL.this(activate);
-?>
