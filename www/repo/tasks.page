@@ -8,7 +8,7 @@ NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
 local Encoding = commonlib.gettable("commonlib.Encoding");
 local EncodingSHA1 = commonlib.gettable("System.Encoding");
 
-include_once("../../dgit/dgit_interface.lua");
+NPL.load("../../dgit/dgit_interface.lua");
 
 local function get_size_by_repo(repo)
     local size = 0;
