@@ -1,4 +1,3 @@
-
 NPL.load("(gl)script/ide/System/System.lua");
 
 local charset = {}
