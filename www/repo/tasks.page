@@ -309,7 +309,7 @@ function create_repo_by_options(options)
     }, function(error_code)
         resume();
     end);
-    --yield();
+    yield();
 
     local repo = get_repo_from_db(record);
     return repo;
