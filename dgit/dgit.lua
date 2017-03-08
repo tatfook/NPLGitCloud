@@ -122,7 +122,7 @@ local function activate()
 
 		if(msg.callback) then
     		NPL.activate(string.format(msg.callback), 
-    		{cmd="callback",original_cmd="info",nid=myNid,info={avail=largest,repos=repos});
+    		{cmd="callback",original_cmd="info",nid=myNid,info={avail=largest,repos=repos}});
     	end
 
     elseif(msg.cmd == "callback") then

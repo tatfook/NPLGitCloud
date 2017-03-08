@@ -15,17 +15,17 @@ end
 
 function dgit_interface_init(callback)
 
-	local file = io.open("/opt/NPLGitCloud/my.nid", "r");
+	local file = io.open("./my.nid", "r");
 
 	for i = 48,  57 do table.insert(charset, string.char(i)) end
 	for i = 65,  90 do table.insert(charset, string.char(i)) end
 	for i = 97, 122 do table.insert(charset, string.char(i)) end
 
-	if(file == nil) then
+	if(file ~= nil) then
 		my_nid = file:read();
 	else
 		my_nid = string.random(20);
-		file = io.open("/opt/NPLGitCloud/my.nid", "w");
+		file = io.open("./my.nid", "w");
 		if(file == nil) then
 			print("permission denied");
 			return
@@ -42,12 +42,12 @@ function dgit_interface_init(callback)
 						end
 						my_ip = data; 
 
-						NPL.activate("./dgit.lua", {cmd="init",
+						NPL.activate("./dgit/dgit.lua", {cmd="init",
 							-- TODO server info
 							nid=my_nid,
 							ip=my_ip,
 							port=1130,
-							repo_dir="/opt/NPLGitCloud",
+							repo_dir="./git_repos",
 						});
 
 						callback(nil);
@@ -55,36 +55,41 @@ function dgit_interface_init(callback)
 end
 
 function dgit_interface_getContent(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="getContent", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="getContent", git_param=param, callback = callback});
 end
 
 function dgit_interface_repoInit(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="repoInit", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="repoInit", git_param=param, callback = callback});
 end
 
 function dgit_interface_updateFile(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="updateFile", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="updateFile", git_param=param, callback = callback});
 end
 
 function dgit_interface_addFile(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="addFile", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="addFile", git_param=param, callback = callback});
 end
 
 function dgit_interface_deleteFile(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="deleteFile", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="deleteFile", git_param=param, callback = callback});
 end
 
 function dgit_interface_deleteRepo(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="deleteRepo", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="deleteRepo", git_param=param, callback = callback});
 end
 
 function dgit_interface_traverseTree(param, callback)
-	NPL.activate("./dgit.lua", {cmd="dgit", git_cmd="traverseTree", git_param=param, callback = callback});
+	NPL.activate("./dgit/dgit.lua", {cmd="dgit", git_cmd="traverseTree", git_param=param, callback = callback});
 end
 
+isStarted = false;
+
 local function activate()
-	dgit_interface_init(function(err)
-	end);
+	if(isStarted == false) then
+		dgit_interface_init(function(err)
+			end);
+		isStarted = true;
+	end
 
 end
 
