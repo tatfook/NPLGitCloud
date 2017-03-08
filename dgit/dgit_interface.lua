@@ -36,11 +36,11 @@ function dgit_interface_init(callback)
 	end
 
 	System.os.GetUrl("bot.whatismyipaddress.com", function(err, msg, data) 
-						if(msg.rcode ~= 200){
+						if(msg.rcode ~= 200) then
 							print("Cannot connected to internet.");
 							callback("No Internet");
 							return;
-						}
+						end
 						my_ip = data; 
 
 						NPL.activate("./dgit.lua", {cmd="init",
