@@ -8,7 +8,7 @@ NPL.load("(gl)script/ide/System/Encoding/sha1.lua");
 local Encoding = commonlib.gettable("commonlib.Encoding");
 local EncodingSHA1 = commonlib.gettable("System.Encoding");
 
-NPL.load("../../../dgit/dgit_interface.lua");
+include_once("../../dgit/dgit_interface.page");
 
 local function get_size_by_repo(repo)
     local size = 0;
@@ -233,6 +233,20 @@ local function add_dirs_by_path(repo, path)
     end
 end
 
+local function delete_file_from_db(repo, path)
+    db.File:deleteOne({ ["+repo+path"] = { repo, path } }, function(err, count) end);
+end
+
+local function add_file_to_db(repo, path)
+    db.File:insertOne({ ["+repo+path"] = { repo, path } }, { repo = repo, path = path }, function(err, data) end);
+end
+
+local function does_file_exist_in_db(repo, path)
+    db.File:count({ ["+repo+path"] = { repo, path } }, function(err, count) resume(count); end);
+    local count = yield(true);
+    return count > 0;
+end
+
 function get_repos_by_user(user)
     local repos = {};
     db.Repo:find({ owner = user }, function(err, records) resume(err, records); end);
@@ -290,12 +304,12 @@ function create_repo_by_options(options)
     end
 
     dgit_interface_repoInit({
-        1 = fullname,
-        2 = is_bare
+        [1] = fullname,
+        [2] = is_bare
     }, function(error_code)
         resume();
     end);
-    yield();
+    --yield();
 
     local repo = get_repo_from_db(record);
     return repo;
@@ -310,7 +324,7 @@ function delete_repo_by_owner_reponame(owner, reponame)
     db.Dir:delete({ repo = owner .. "/" .. reponame }, function(err, count) end);
 
     dgit_interface_deleteRepo({
-        1 = owner .. "/" .. reponame
+        [1] = owner .. "/" .. reponame
     }, function(error_code)
         resume();
     end);
@@ -320,24 +334,70 @@ function delete_repo_by_owner_reponame(owner, reponame)
 end
 
 function get_contents_by_repo_path(repo, path)
-    path = process_path(path);
-    log("get contents: " .. repo .. " " .. path);
-    local type = check_path_exist(repo, path);
-    if (not type) then
-        return nil;
-    end
-    if (type == "file") then
-        local dir, filename = get_dir_by_path(path), get_name_by_path(path);
-        return get_file_by_repo_path(repo, dir, filename);
-    else
-        return get_items_by_dir(repo, path);
-    end
+    path = path:gsub("^%./", "");
+    dgit_interface_getContent({
+        [1] = repo,
+        [2] = "master",
+        [3] = path
+    }, function(arr)
+        local url = api_server_addr .. "/repos/" .. repo .. "/contents/" .. path;
+        local result = {
+            type = "file",
+            size = arr[2]:len(),
+            name = get_name_by_path(path),
+            path = path,
+            content = Encoding.base64(arr[2]),
+            sha = get_sha_by_file(content, content:len()),
+            url = url,
+            _link = {
+                self = url
+            }
+        };
+        resume(result);
+    end);
+    local result = yield(true);
+    return result;
 end
 
 function delete_file_by_options(options)
-    local repo, path = options["repo"], process_path(options["path"]);
-    local dir, name = get_dir_by_path(path), get_name_by_path(path);
-    db.Dir:deleteOne({ ["+repo+dir+name"] = { repo, dir, name } }, function(err, count) end);
+    delete_file_from_db(options["repo"], options["path"]);
+    dgit_interface_deleteFile({
+        [1] = options["repo"],
+        [2] = options["path"],
+        [3] = options["commit_msg"],
+        [4] = options["branch_name"],
+        [5] = options["origin_sha"]
+    }, function(arr)
+        resume(arr[1]);
+    end);
+    local err_code = yield(true);
+    return err_code;
+end
+
+function update_file_by_options(options)
+    local o = {
+        [1] = options["repo"],
+        [2] = options["path"],
+        [3] = options["commit_msg"],
+        [4] = options["branch_name"],
+        [5] = options["origin_sha"],
+        [6] = options["content_length"],
+        [7] = options["content"]
+    };
+    if (does_file_exist_in_db(options["repo"], options["path"])) then
+        dgit_interface_updateFile(o, function(arr)
+            resume(arr[1]);
+        end);
+        local err_code = yield(true);
+        return err_code;
+    else
+        add_file_to_db(options["repo"], options["path"]);
+        dgit_interface_addFile(o, function(arr)
+            resume(arr[1]);
+        end);
+        local err_code = yield(true);
+        return err_code;
+    end
 end
 
 function get_trees_by_repo(repo, sha)
@@ -345,8 +405,8 @@ function get_trees_by_repo(repo, sha)
         sha = "HEAD"
     end
     dgit_interface_traverseTree({
-        1 = repo,
-        2 = sha
+        [1] = repo,
+        [2] = sha
     }, function(array)
         local tree_oid = array[2];
         local tree = {};
